@@ -10,7 +10,7 @@ const OD = {
   SESSION_KEY:    'od_session',
   SESSION_LONG:   1000 * 60 * 60 * 24 * 30,
   SESSION_SHORT:  1000 * 60 * 60 * 8,
-  PASSWORD_HASH:  'a3f1c9de8b2f4e6d7a1b5c3e9f2d4a6b8c0e2f4a6b8d0e2f4a6b8c0e2f4a6b',
+  PASSWORD_HASH:  '210154149c0c39a8429193556b38607b35a92b38037872870adec491ab776774',
 
   // Cache BDD
   CACHE_KEY:      'od_db_cache',
@@ -24,7 +24,7 @@ const OD = {
 
   // Google Apps Script URL (à remplacer par votre URL déployée)
   // Le script doit accepter ?action=getData et retourner JSON
-  GAS_URL: 'https://script.google.com/macros/s/VOTRE_SCRIPT_ID/exec',
+  GAS_URL: 'https://script.google.com/macros/s/AKfycbwNlMpEV-sy8cZ0q6P-euX-J_aqO79fSmZX8WO9-4XNs3unP0OLkxlqZguwD5voyY8PIw/exec',
 
   // Durée d'affichage max de l'historique
   HISTORY_MAX: 50,

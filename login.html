@@ -1,25 +1,33 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OUIDROP — Connexion</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
   <style>
     :root {
       --bg: #0d0f14;
       --surface: #161a22;
       --border: #252b38;
-      --accent: #e8c547;
-      --accent2: #f07b3f;
+      --border2: #323a4e;
+      --accent: #82BEE9;
+      --accent2: #EC7C7C;
       --text: #e8eaf0;
       --muted: #6b7385;
       --error: #e85547;
       --radius: 4px;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
       font-family: 'Syne', sans-serif;
@@ -38,8 +46,8 @@
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(rgba(232,197,71,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(232,197,71,0.03) 1px, transparent 1px);
+        linear-gradient(rgba(232, 197, 71, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232, 197, 71, 0.03) 1px, transparent 1px);
       background-size: 40px 40px;
       pointer-events: none;
     }
@@ -52,7 +60,7 @@
       width: 600px;
       height: 600px;
       border-radius: 50%;
-      background: radial-gradient(ellipse, rgba(240,123,63,0.08) 0%, transparent 70%);
+      background: radial-gradient(ellipse, rgba(240, 123, 63, 0.08) 0%, transparent 70%);
       pointer-events: none;
     }
 
@@ -75,18 +83,7 @@
       margin-bottom: 8px;
     }
 
-    .logo-mark {
-      width: 40px;
-      height: 40px;
-      background: var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 18px;
-      color: var(--bg);
-      clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%);
-    }
+
 
     .brand-name {
       font-size: 26px;
@@ -171,7 +168,9 @@
       position: relative;
     }
 
-    .show-toggle input { padding-right: 44px; }
+    .show-toggle input {
+      padding-right: 44px;
+    }
 
     .toggle-btn {
       position: absolute;
@@ -224,12 +223,17 @@
       transition: opacity 0.2s, transform 0.1s;
     }
 
-    .btn-login:hover { opacity: 0.9; }
-    .btn-login:active { transform: scale(0.98); }
+    .btn-login:hover {
+      opacity: 0.9;
+    }
+
+    .btn-login:active {
+      transform: scale(0.98);
+    }
 
     .error-msg {
-      background: rgba(232,85,71,0.1);
-      border: 1px solid rgba(232,85,71,0.3);
+      background: rgba(232, 85, 71, 0.1);
+      border: 1px solid rgba(232, 85, 71, 0.3);
       border-radius: var(--radius);
       padding: 10px 14px;
       font-family: 'DM Mono', monospace;
@@ -249,20 +253,39 @@
     }
 
     @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20% { transform: translateX(-8px); }
-      40% { transform: translateX(8px); }
-      60% { transform: translateX(-5px); }
-      80% { transform: translateX(5px); }
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20% {
+        transform: translateX(-8px);
+      }
+
+      40% {
+        transform: translateX(8px);
+      }
+
+      60% {
+        transform: translateX(-5px);
+      }
+
+      80% {
+        transform: translateX(5px);
+      }
     }
-    .shake { animation: shake 0.4s ease; }
+
+    .shake {
+      animation: shake 0.4s ease;
+    }
   </style>
 </head>
+
 <body>
   <div class="login-wrap">
     <div class="brand">
       <div class="brand-logo">
-        <div class="logo-mark">OD</div>
         <span class="brand-name">OUIDROP</span>
       </div>
       <div class="brand-sub">Support Technique — Codes Erreur</div>
@@ -289,7 +312,7 @@
       <div class="error-msg" id="errMsg">⚠ Mot de passe incorrect</div>
     </div>
 
-    <div class="footer-note">OUIDROP © 2025 — Usage interne uniquement</div>
+    <div class="footer-note">OUIDROP © 2026 — Usage interne uniquement</div>
   </div>
 
   <script>
@@ -298,12 +321,11 @@
     // 1. Ouvrir la console navigateur
     // 2. Taper : crypto.subtle.digest('SHA-256', new TextEncoder().encode('votre_mdp')).then(b => console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
     // 3. Remplacer la valeur ci-dessous par le hash obtenu
-    // Hash par défaut : "ouidrop2025" → à changer en production !
-    const PASSWORD_HASH = "a3f1c9de8b2f4e6d7a1b5c3e9f2d4a6b8c0e2f4a6b8d0e2f4a6b8c0e2f4a6b";
+    const PASSWORD_HASH = "210154149c0c39a8429193556b38607b35a92b38037872870adec491ab776774";
     // SESSION
-    const SESSION_KEY   = "od_session";
+    const SESSION_KEY = "od_session";
     const SESSION_SHORT = 1000 * 60 * 60 * 8;    // 8h sans remember
-    const SESSION_LONG  = 1000 * 60 * 60 * 24 * 30; // 30j avec remember
+    const SESSION_LONG = 1000 * 60 * 60 * 24 * 30; // 30j avec remember
 
     // Vérifie si déjà authentifié
     (function checkSession() {
@@ -314,17 +336,17 @@
         if (s.exp && Date.now() < s.exp) {
           window.location.href = 'index.html';
         }
-      } catch(e) { localStorage.removeItem(SESSION_KEY); }
+      } catch (e) { localStorage.removeItem(SESSION_KEY); }
     })();
 
     async function sha256(str) {
       const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-      return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2,'0')).join('');
+      return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
     }
 
     async function doLogin() {
-      const pwd   = document.getElementById('pwd').value;
-      const keep  = document.getElementById('remember').checked;
+      const pwd = document.getElementById('pwd').value;
+      const keep = document.getElementById('remember').checked;
       if (!pwd) return;
 
       const hash = await sha256(pwd);
@@ -332,15 +354,15 @@
       // NOTE : en production, remplacer PASSWORD_HASH par le vrai hash
       // Pour demo : tout mot de passe non-vide est accepté si le hash correspond
       // Le hash fourni ici est un placeholder — remplacez-le !
-      const isValid = (hash === PASSWORD_HASH) || pwd === 'ouidrop2025'; // ligne demo
+      const isValid = (hash === PASSWORD_HASH); // ligne demo
 
       if (isValid) {
         const exp = Date.now() + (keep ? SESSION_LONG : SESSION_SHORT);
-        localStorage.setItem(SESSION_KEY, JSON.stringify({ exp, hash: hash.slice(0,8) }));
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ exp, hash: hash.slice(0, 8) }));
         window.location.href = 'index.html';
       } else {
         const card = document.getElementById('loginCard');
-        const err  = document.getElementById('errMsg');
+        const err = document.getElementById('errMsg');
         err.style.display = 'block';
         card.classList.add('shake');
         setTimeout(() => card.classList.remove('shake'), 500);
@@ -357,4 +379,5 @@
     });
   </script>
 </body>
+
 </html>
