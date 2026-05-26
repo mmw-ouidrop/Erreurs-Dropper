@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OUIDROP — Notes de ticket</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .header-brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;}
+    .logo-mark{width:32px;height:32px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:var(--bg);clip-path:polygon(0 0,100% 0,100% 75%,75% 100%,0 100%);flex-shrink:0;}
+    .header-right{display:flex;align-items:center;gap:8px;margin-left:auto;}
+    .hamburger{display:none;background:none;border:none;color:var(--text2);cursor:pointer;font-size:18px;padding:4px 8px;}
+
+    /* ── Note cards ─────────────────────────── */
+    .notes-grid { display: flex; flex-direction: column; gap: 12px; }
+    .note-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .note-card-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; border-bottom: 1px solid var(--border);
+      cursor: pointer; transition: background 0.1s;
+    }
+    .note-card-header:hover { background: var(--surface2); }
+    .note-code { font-family: 'DM Mono', monospace; font-size: 15px; color: var(--accent); font-weight: 500; }
+    .note-desc { font-size: 12px; color: var(--text2); flex: 1; }
+    .note-ts { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); white-space: nowrap; }
+    .note-body { padding: 14px 16px; }
+    .note-text { font-size: 13px; color: var(--text2); line-height: 1.6; white-space: pre-wrap; margin-bottom: 10px; }
+    .note-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    /* ── Export panel ───────────────────────── */
+    .export-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px;
+      margin-bottom: 20px; position: relative;
+    }
+    .export-panel::before {
+      content:''; position:absolute; top:0;left:0;right:0;height:2px;
+      background: linear-gradient(90deg,var(--accent),var(--accent2));
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .export-preview {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px 14px;
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--text2); white-space: pre-wrap; max-height: 200px;
+      overflow-y: auto; margin: 12px 0;
+      display: none;
+    }
+
+    [data-page="notes"] .nav-item[href="notes.html"] { color: var(--accent) !important; background: var(--accent-dim) !important; }
+    @media (max-width: 768px) { .hamburger { display: block; } }
+  </style>
+</head>
+<body data-page="notes">
+
+<div class="app-shell">
+  <header class="app-header">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <div class="header-brand">
+      <div class="logo-mark">OD</div>
+      <span>OUIDROP</span>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-ghost btn-sm" onclick="logout()">⏻</button>
+    </div>
+  </header>
+
+  <aside class="app-sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">Navigation</div>
+      <a class="nav-item" href="index.html"><span class="icon">⌂</span> Tableau de bord</a>
+      <a class="nav-item" href="search.html"><span class="icon">⌕</span> Recherche erreurs</a>
+      <a class="nav-item" href="table-automate.html"><span class="icon">⊞</span> Table Automate</a>
+      <a class="nav-item" href="table-lexium.html"><span class="icon">⊟</span> Table Lexium</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Outils</div>
+      <a class="nav-item active" href="notes.html"><span class="icon">✎</span> Notes de ticket</a>
+      <a class="nav-item" href="stats.html"><span class="icon">◈</span> Statistiques</a>
+    </div>
+    <div class="nav-section">
+      <button class="nav-item" onclick="logout()"><span class="icon">⏻</span> Déconnexion</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <main class="app-main">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+      <h2>Notes de ticket</h2>
+      <span class="badge badge-ok" id="noteCount">—</span>
+    </div>
+
+    <!-- Export panel -->
+    <div class="export-panel">
+      <h3 style="margin-bottom:6px;">Export pour amélioration de la BDD</h3>
+      <p style="font-size:12px;margin-bottom:12px;">Exportez l'ensemble de vos notes de ticket sous forme de tableau (TSV) pour compléter directement votre Google Sheet.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="showPreview()">Aperçu</button>
+        <button class="btn btn-ghost" onclick="exportClipboard()">⧉ Copier tout (TSV)</button>
+        <button class="btn btn-ghost" onclick="exportCSV()">⬇ Télécharger CSV</button>
+      </div>
+      <div class="export-preview" id="exportPreview"></div>
+    </div>
+
+    <!-- Notes list -->
+    <div class="notes-grid" id="notesGrid"></div>
+    <div class="empty-state" id="notesEmpty" style="display:none;">
+      <div class="empty-icon">✎</div>
+      <p>Aucune note enregistrée.<br>Ajoutez des notes depuis la page de détail d'une erreur.</p>
+    </div>
+  </main>
+</div>
+
+<script src="core.js"></script>
+<script>
+if (!requireAuth()) throw new Error('Not authenticated');
+
+let db = null;
+
+(async function init() {
+  try { db = await getDB(); }
+  catch(e) { db = getSampleData(); }
+  renderNotes();
+})();
+
+function renderNotes() {
+  const notes  = getNotes();
+  const keys   = Object.keys(notes);
+  const grid   = document.getElementById('notesGrid');
+  const empty  = document.getElementById('notesEmpty');
+  const count  = document.getElementById('noteCount');
+
+  count.textContent = `${keys.length} note${keys.length > 1 ? 's' : ''}`;
+
+  if (!keys.length) { grid.innerHTML = ''; empty.style.display='block'; return; }
+  empty.style.display = 'none';
+
+  // Sort by latest first
+  keys.sort((a,b) => notes[b].ts - notes[a].ts);
+
+  grid.innerHTML = keys.map(k => {
+    const [source, code] = k.split('::');
+    const n = notes[k];
+    let desc = '';
+    if (db) {
+      const rec = source === 'lexium'
+        ? db.lexium?.find(r => r.codeDec === code)
+        : db.automate?.find(r => r.code === code);
+      desc = rec?.description || '';
+    }
+    const srcBadge = source === 'lexium'
+      ? `<span class="badge badge-lexium" style="font-size:9px;">Lex</span>`
+      : `<span class="badge badge-automate" style="font-size:9px;">Aut</span>`;
+
+    return `<div class="note-card">
+      <div class="note-card-header" onclick="goToError('${code}','${source}')">
+        ${srcBadge}
+        <span class="note-code">${code}</span>
+        <span class="note-desc">${desc}</span>
+        <span class="note-ts">${fmtDate(n.ts)}</span>
+        <span style="color:var(--muted);margin-left:4px;">›</span>
+      </div>
+      <div class="note-body">
+        <div class="note-text">${escapeHtml(n.text)}</div>
+        <div class="note-actions">
+          <button class="btn btn-ghost btn-sm" onclick="copyNoteEntry('${k}')">⧉ Copier</button>
+          <button class="btn btn-ghost btn-sm" onclick="goToError('${code}','${source}')">✎ Modifier</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteNote('${k}')">✕ Supprimer</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function goToError(code, source) {
+  window.location.href = `error.html?code=${code}&source=${source}`;
+}
+
+function copyNoteEntry(key) {
+  const notes = getNotes();
+  const n = notes[key];
+  if (!n) return;
+  const [source, code] = key.split('::');
+  copyToClipboard(`Code : ${code} (${source})\nDate : ${fmtDate(n.ts)}\nNote : ${n.text}`);
+}
+
+function deleteNote(key) {
+  if (!confirm('Supprimer cette note ?')) return;
+  setNote(key, '');
+  renderNotes();
+  toast('Note supprimée', 'info');
+}
+
+// ── Export ───────────────────────────────────────────
+function buildTSV() {
+  const notes = getNotes();
+  const keys  = Object.keys(notes);
+  if (!keys.length) return null;
+  let out = 'Code Erreur\tSource\tDate\tNote\n';
+  keys.sort((a,b) => notes[b].ts - notes[a].ts).forEach(k => {
+    const [source, code] = k.split('::');
+    const d = fmtDate(notes[k].ts);
+    const t = notes[k].text.replace(/\t/g,' ').replace(/\n/g,' ↵ ');
+    out += `${code}\t${source}\t${d}\t${t}\n`;
+  });
+  return out;
+}
+
+function showPreview() {
+  const tsv = buildTSV();
+  const prev = document.getElementById('exportPreview');
+  if (!tsv) { toast('Aucune note à exporter', 'warn'); return; }
+  prev.textContent = tsv;
+  prev.style.display = prev.style.display === 'block' ? 'none' : 'block';
+}
+
+function exportClipboard() {
+  const tsv = buildTSV();
+  if (!tsv) { toast('Aucune note à exporter', 'warn'); return; }
+  copyToClipboard(tsv);
+}
+
+function exportCSV() {
+  const tsv = buildTSV();
+  if (!tsv) { toast('Aucune note à exporter', 'warn'); return; }
+  const csv = tsv.replace(/\t/g, ';'); // point-virgule pour Excel FR
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `ouidrop_notes_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  toast('Fichier CSV téléchargé !', 'success');
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('active');
+}
+</script>
+</body>
+</html>

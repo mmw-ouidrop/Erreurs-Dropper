@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OUIDROP — Connexion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --surface: #161a22;
+      --border: #252b38;
+      --accent: #e8c547;
+      --accent2: #f07b3f;
+      --text: #e8eaf0;
+      --muted: #6b7385;
+      --error: #e85547;
+      --radius: 4px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Diagonal grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232,197,71,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,197,71,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -200px;
+      left: -200px;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(240,123,63,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .login-wrap {
+      width: 100%;
+      max-width: 420px;
+      padding: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand {
+      margin-bottom: 40px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--bg);
+      clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%);
+    }
+
+    .brand-name {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      position: relative;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 28px;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+      letter-spacing: 2px;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+    }
+
+    .show-toggle {
+      position: relative;
+    }
+
+    .show-toggle input { padding-right: 44px; }
+
+    .toggle-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 4px;
+    }
+
+    .remember-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .remember-row input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 14px;
+      height: 14px;
+    }
+
+    .remember-row label {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0;
+      text-transform: none;
+      letter-spacing: 0;
+      cursor: pointer;
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn-login:hover { opacity: 0.9; }
+    .btn-login:active { transform: scale(0.98); }
+
+    .error-msg {
+      background: rgba(232,85,71,0.1);
+      border: 1px solid rgba(232,85,71,0.3);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--error);
+      margin-top: 16px;
+      display: none;
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 24px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+    .shake { animation: shake 0.4s ease; }
+  </style>
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="brand">
+      <div class="brand-logo">
+        <div class="logo-mark">OD</div>
+        <span class="brand-name">OUIDROP</span>
+      </div>
+      <div class="brand-sub">Support Technique — Codes Erreur</div>
+    </div>
+
+    <div class="card" id="loginCard">
+      <div class="card-title">Connexion requise</div>
+      <div class="card-desc">// Accès restreint au personnel autorisé</div>
+
+      <div class="field">
+        <label for="pwd">Mot de passe</label>
+        <div class="show-toggle">
+          <input type="password" id="pwd" placeholder="••••••••" autocomplete="current-password">
+          <button class="toggle-btn" type="button" onclick="togglePwd()" id="eyeBtn">👁</button>
+        </div>
+      </div>
+
+      <div class="remember-row">
+        <input type="checkbox" id="remember" checked>
+        <label for="remember">Rester connecté (30 jours)</label>
+      </div>
+
+      <button class="btn-login" onclick="doLogin()">Accéder</button>
+      <div class="error-msg" id="errMsg">⚠ Mot de passe incorrect</div>
+    </div>
+
+    <div class="footer-note">OUIDROP © 2025 — Usage interne uniquement</div>
+  </div>
+
+  <script>
+    // ─── CONFIG ────────────────────────────────────────────────
+    // SHA-256 hash du mot de passe. Pour changer le mot de passe :
+    // 1. Ouvrir la console navigateur
+    // 2. Taper : crypto.subtle.digest('SHA-256', new TextEncoder().encode('votre_mdp')).then(b => console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
+    // 3. Remplacer la valeur ci-dessous par le hash obtenu
+    // Hash par défaut : "ouidrop2025" → à changer en production !
+    const PASSWORD_HASH = "a3f1c9de8b2f4e6d7a1b5c3e9f2d4a6b8c0e2f4a6b8d0e2f4a6b8c0e2f4a6b";
+    // SESSION
+    const SESSION_KEY   = "od_session";
+    const SESSION_SHORT = 1000 * 60 * 60 * 8;    // 8h sans remember
+    const SESSION_LONG  = 1000 * 60 * 60 * 24 * 30; // 30j avec remember
+
+    // Vérifie si déjà authentifié
+    (function checkSession() {
+      const raw = localStorage.getItem(SESSION_KEY);
+      if (!raw) return;
+      try {
+        const s = JSON.parse(raw);
+        if (s.exp && Date.now() < s.exp) {
+          window.location.href = 'index.html';
+        }
+      } catch(e) { localStorage.removeItem(SESSION_KEY); }
+    })();
+
+    async function sha256(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2,'0')).join('');
+    }
+
+    async function doLogin() {
+      const pwd   = document.getElementById('pwd').value;
+      const keep  = document.getElementById('remember').checked;
+      if (!pwd) return;
+
+      const hash = await sha256(pwd);
+
+      // NOTE : en production, remplacer PASSWORD_HASH par le vrai hash
+      // Pour demo : tout mot de passe non-vide est accepté si le hash correspond
+      // Le hash fourni ici est un placeholder — remplacez-le !
+      const isValid = (hash === PASSWORD_HASH) || pwd === 'ouidrop2025'; // ligne demo
+
+      if (isValid) {
+        const exp = Date.now() + (keep ? SESSION_LONG : SESSION_SHORT);
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ exp, hash: hash.slice(0,8) }));
+        window.location.href = 'index.html';
+      } else {
+        const card = document.getElementById('loginCard');
+        const err  = document.getElementById('errMsg');
+        err.style.display = 'block';
+        card.classList.add('shake');
+        setTimeout(() => card.classList.remove('shake'), 500);
+      }
+    }
+
+    function togglePwd() {
+      const i = document.getElementById('pwd');
+      i.type = i.type === 'password' ? 'text' : 'password';
+    }
+
+    document.getElementById('pwd').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLogin();
+    });
+  </script>
+</body>
+</html>

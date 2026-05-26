@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OUIDROP — Erreur</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .header-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; }
+    .logo-mark { width:32px;height:32px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:var(--bg);clip-path:polygon(0 0,100% 0,100% 75%,75% 100%,0 100%);flex-shrink:0; }
+    .header-right { display:flex;align-items:center;gap:8px;margin-left:auto; }
+    .hamburger { display:none;background:none;border:none;color:var(--text2);cursor:pointer;font-size:18px;padding:4px 8px; }
+
+    /* ── Back bar ─────────────────────────── */
+    .back-bar {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px;
+    }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      color: var(--muted); font-size: 13px; cursor: pointer;
+      background: none; border: none; font-family: 'Syne', sans-serif;
+      font-weight: 600; padding: 6px 0; transition: color 0.15s;
+    }
+    .back-btn:hover { color: var(--text); }
+    .back-bar .breadcrumb {
+      font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+    }
+
+    /* ── Error title area ─────────────────── */
+    .error-hero {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px 24px;
+      margin-bottom: 16px; position: relative; overflow: hidden;
+    }
+    .error-hero::before {
+      content: ''; position: absolute; top:0;left:0;right:0;height:3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .error-code-big {
+      font-family: 'DM Mono', monospace; font-size: 32px; font-weight: 500;
+      color: var(--accent); line-height: 1; margin-bottom: 6px;
+    }
+    .error-meta { display:flex; align-items:center; gap:8px; flex-wrap: wrap; margin-bottom: 10px; }
+    .error-desc-main { font-size: 15px; color: var(--text); font-weight: 600; line-height: 1.4; }
+
+    /* ── Two-panel layout ─────────────────── */
+    .panel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .panel-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .panel-icon { font-size: 16px; }
+    .panel-title { font-size: 13px; font-weight: 700; }
+
+    .panel-body { padding: 18px; }
+
+    /* Error panel (left) */
+    .panel-error .panel-header { border-left: 3px solid var(--warn); }
+
+    /* Resolution panel (right) */
+    .panel-resolution .panel-header { border-left: 3px solid var(--ok); }
+
+    .info-row {
+      display: flex; flex-direction: column; gap: 3px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-row .lbl { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-family: 'DM Mono', monospace; }
+    .info-row .val { font-size: 13px; color: var(--text); line-height: 1.5; }
+    .info-row .val.mono { font-family: 'DM Mono', monospace; }
+    .info-row .val.missing { color: var(--muted); font-style: italic; }
+
+    /* Steps */
+    .steps-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .step-item {
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .step-num {
+      width: 22px; height: 22px; min-width: 22px;
+      background: var(--accent-dim); border: 1px solid var(--accent);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent);
+      margin-top: 2px;
+    }
+    .step-text { font-size: 13px; color: var(--text2); line-height: 1.5; flex: 1; }
+
+    /* Notes */
+    .note-area {
+      width: 100%; min-height: 90px; resize: vertical;
+      padding: 10px 12px; line-height: 1.5; font-size: 13px;
+    }
+    .note-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+
+    /* Nav highlight */
+    [data-page="search"] .nav-item[href="search.html"] { color: var(--accent) !important; background: var(--accent-dim) !important; }
+
+    @media (max-width: 768px) {
+      .hamburger { display: block; }
+      .panel-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body data-page="search">
+
+<div class="app-shell">
+  <header class="app-header">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <div class="header-brand">
+      <div class="logo-mark">OD</div>
+      <span>OUIDROP</span>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-ghost btn-sm" onclick="logout()">⏻</button>
+    </div>
+  </header>
+
+  <aside class="app-sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">Navigation</div>
+      <a class="nav-item" href="index.html"><span class="icon">⌂</span> Tableau de bord</a>
+      <a class="nav-item" href="search.html"><span class="icon">⌕</span> Recherche erreurs</a>
+      <a class="nav-item" href="table-automate.html"><span class="icon">⊞</span> Table Automate</a>
+      <a class="nav-item" href="table-lexium.html"><span class="icon">⊟</span> Table Lexium</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Outils</div>
+      <a class="nav-item" href="notes.html"><span class="icon">✎</span> Notes de ticket</a>
+      <a class="nav-item" href="stats.html"><span class="icon">◈</span> Statistiques</a>
+    </div>
+    <div class="nav-section">
+      <button class="nav-item" onclick="logout()"><span class="icon">⏻</span> Déconnexion</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <main class="app-main">
+    <div class="back-bar">
+      <button class="back-btn" onclick="history.back()">← Retour</button>
+      <span class="breadcrumb" id="breadcrumb">// chargement…</span>
+    </div>
+
+    <!-- Error hero -->
+    <div class="error-hero" id="errorHero">
+      <div class="error-code-big" id="heroCode">—</div>
+      <div class="error-meta" id="heroMeta"></div>
+      <div class="error-desc-main" id="heroDesc">Chargement…</div>
+    </div>
+
+    <!-- Two panels -->
+    <div class="panel-grid">
+      <!-- LEFT: Error info -->
+      <div class="panel panel-error">
+        <div class="panel-header">
+          <span class="panel-icon">⚠</span>
+          <span class="panel-title">Informations sur l'erreur</span>
+        </div>
+        <div class="panel-body" id="errorBody">
+          <div class="empty-state"><p>Chargement…</p></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Resolution -->
+      <div class="panel panel-resolution">
+        <div class="panel-header">
+          <span class="panel-icon">🔧</span>
+          <span class="panel-title">Méthode de résolution</span>
+          <button class="btn btn-ghost btn-sm" style="margin-left:auto;" id="copyResBtn" onclick="copyResolution()">⧉ Copier</button>
+        </div>
+        <div class="panel-body" id="resolutionBody">
+          <div class="empty-state"><p>Chargement…</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes panel -->
+    <div class="panel" style="margin-top:16px;">
+      <div class="panel-header">
+        <span class="panel-icon">✎</span>
+        <span class="panel-title">Note de ticket</span>
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-left:8px;" id="noteTs"></span>
+      </div>
+      <div class="panel-body">
+        <textarea class="note-area" id="noteArea" placeholder="Ajoutez une note pour ce code erreur (causes observées, résolution appliquée, machine concernée…)" oninput="autoSaveNote()"></textarea>
+        <div class="note-actions">
+          <button class="btn btn-ghost btn-sm" onclick="copyNote()">⧉ Copier la note</button>
+          <button class="btn btn-ghost btn-sm" onclick="copyFull()">⧉ Copier code + note</button>
+          <button class="btn btn-danger btn-sm" onclick="clearNote()">✕ Effacer</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="core.js"></script>
+<script>
+if (!requireAuth()) throw new Error('Not authenticated');
+
+const params = new URLSearchParams(window.location.search);
+const code   = params.get('code');
+const source = params.get('source'); // 'automate' | 'lexium'
+const noteKey = `${source}::${code}`;
+
+let db  = null;
+let rec = null;
+
+(async function init() {
+  try {
+    db = await getDB();
+  } catch(e) {
+    db = getSampleData();
+    toast('Mode démo', 'warn');
+  }
+
+  if (source === 'lexium') {
+    rec = db.lexium?.find(r => r.codeDec === code);
+  } else {
+    rec = db.automate?.find(r => r.code === code);
+  }
+
+  if (!rec) {
+    document.getElementById('heroDesc').textContent = `Code erreur "${code}" introuvable.`;
+    return;
+  }
+
+  addToHistory(code, source);
+  renderError();
+  loadNote();
+})();
+
+// ── Render ─────────────────────────────────────────
+function renderError() {
+  // Breadcrumb
+  document.title = `OUIDROP — ${code}`;
+  document.getElementById('breadcrumb').textContent = `// ${source === 'lexium' ? 'Lexium' : 'Automate'} / ${code}`;
+
+  // Hero
+  document.getElementById('heroCode').textContent = code;
+  const desc = rec.description || '—';
+  document.getElementById('heroDesc').textContent = desc;
+
+  // Meta badges
+  const meta = document.getElementById('heroMeta');
+  if (source === 'lexium') {
+    const cls = rec.classe || '?';
+    meta.innerHTML = `
+      <span class="badge badge-lexium">Lexium</span>
+      <span class="badge cls-badge-${cls}">Classe ${cls} — ${severityLabel(cls)}</span>
+      <span class="badge badge-missing mono">DEC: ${rec.codeDec} / HEX: ${rec.codeHex || '—'}</span>`;
+  } else {
+    const hasMes = !isMissing(rec.mesures);
+    meta.innerHTML = `
+      <span class="badge badge-automate">Automate</span>
+      <span class="badge badge-missing">${rec.emplacement || '—'}</span>
+      <span class="badge ${hasMes ? 'badge-ok' : 'badge-missing'}">${hasMes ? '✓ Résolution documentée' : '⊘ Non documenté'}</span>`;
+  }
+
+  // Left panel — error info
+  const errBody = document.getElementById('errorBody');
+  if (source === 'lexium') {
+    errBody.innerHTML = infoRow('Code décimal', rec.codeDec, true)
+      + infoRow('Code hexadécimal', rec.codeHex, true)
+      + infoRow('Classe d\'erreur', `Classe ${rec.classe} — ${severityLabel(rec.classe)}`)
+      + infoRow('Description', rec.description)
+      + infoRow('Cause connue', isMissing(rec.cause) ? null : rec.cause);
+  } else {
+    errBody.innerHTML = infoRow('Code erreur', rec.code, true)
+      + infoRow('Emplacement', rec.emplacement)
+      + infoRow('Description', rec.description)
+      + infoRow('Cause connue', isMissing(rec.causes) ? null : rec.causes);
+  }
+
+  // Right panel — resolution
+  const resBody = document.getElementById('resolutionBody');
+  const rawMes  = source === 'lexium' ? rec.mesures : rec.mesures;
+  if (isMissing(rawMes)) {
+    resBody.innerHTML = `<div class="empty-state" style="padding:24px 0;">
+      <div class="empty-icon">⊘</div>
+      <p>Aucune méthode de résolution documentée.<br>Vous pouvez ajouter une note ci-dessous.</p>
+    </div>`;
+    document.getElementById('copyResBtn').disabled = true;
+  } else {
+    // Parser les étapes numérotées si présentes
+    const steps = parseSteps(rawMes);
+    if (steps.length > 1) {
+      resBody.innerHTML = `<ol class="steps-list">${steps.map((s, i) =>
+        `<li class="step-item"><span class="step-num">${i+1}</span><span class="step-text">${s}</span></li>`
+      ).join('')}</ol>`;
+    } else {
+      resBody.innerHTML = `<div style="font-size:13px;color:var(--text2);line-height:1.6;">${rawMes.replace(/\n/g,'<br>')}</div>`;
+    }
+  }
+}
+
+function infoRow(label, val, isMono = false) {
+  const missing  = val === null || val === undefined || isMissing(String(val));
+  const display  = missing ? 'Non renseigné' : val;
+  const cls      = missing ? 'missing' : (isMono ? 'mono' : '');
+  return `<div class="info-row">
+    <span class="lbl">${label}</span>
+    <span class="val ${cls}">${display}</span>
+  </div>`;
+}
+
+function parseSteps(text) {
+  if (!text) return [];
+  // Si contient des numéros 1. 2. ou des points-virgules
+  const byNum = text.split(/\n?\d+[\.\)]\s+/).filter(s => s.trim());
+  if (byNum.length > 1) return byNum;
+  const bySemi = text.split(/;\s*/).filter(s => s.trim());
+  if (bySemi.length > 1) return bySemi;
+  const byNewline = text.split(/\n/).filter(s => s.trim());
+  if (byNewline.length > 1) return byNewline;
+  return [text];
+}
+
+// ── Notes ───────────────────────────────────────────
+let noteSaveTimer = null;
+
+function loadNote() {
+  const notes = getNotes();
+  const n = notes[noteKey];
+  if (n) {
+    document.getElementById('noteArea').value = n.text;
+    document.getElementById('noteTs').textContent = `Sauvegardé ${fmtDate(n.ts)}`;
+  }
+}
+
+function autoSaveNote() {
+  clearTimeout(noteSaveTimer);
+  noteSaveTimer = setTimeout(() => {
+    const text = document.getElementById('noteArea').value;
+    setNote(noteKey, text);
+    const ts = getNotes()[noteKey]?.ts;
+    document.getElementById('noteTs').textContent = ts ? `Sauvegardé ${fmtDate(ts)}` : '';
+  }, 800);
+}
+
+function clearNote() {
+  if (!confirm('Effacer cette note ?')) return;
+  document.getElementById('noteArea').value = '';
+  setNote(noteKey, '');
+  document.getElementById('noteTs').textContent = '';
+  toast('Note effacée', 'info');
+}
+
+function copyNote() {
+  const t = document.getElementById('noteArea').value.trim();
+  if (!t) { toast('Note vide', 'warn'); return; }
+  copyToClipboard(t);
+}
+
+function copyResolution() {
+  const rawMes = source === 'lexium' ? rec?.mesures : rec?.mesures;
+  if (!rawMes || isMissing(rawMes)) { toast('Aucune résolution à copier', 'warn'); return; }
+  copyToClipboard(`[${source === 'lexium' ? 'Lexium' : 'Automate'}] Code ${code}\nRésolution : ${rawMes}`);
+}
+
+function copyFull() {
+  const note = document.getElementById('noteArea').value.trim();
+  const rawMes = source === 'lexium' ? rec?.mesures : rec?.mesures;
+  let text = `Code erreur : ${code} (${source === 'lexium' ? 'Lexium' : 'Automate'})\n`;
+  text += `Description : ${rec?.description || '—'}\n`;
+  if (!isMissing(rawMes)) text += `Résolution : ${rawMes}\n`;
+  if (note) text += `Note ticket : ${note}`;
+  copyToClipboard(text.trim());
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('active');
+}
+</script>
+</body>
+</html>

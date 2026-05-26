@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OUIDROP — Table Lexium</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .header-brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;}
+    .logo-mark{width:32px;height:32px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:var(--bg);clip-path:polygon(0 0,100% 0,100% 75%,75% 100%,0 100%);flex-shrink:0;}
+    .header-right{display:flex;align-items:center;gap:8px;margin-left:auto;}
+    .hamburger{display:none;background:none;border:none;color:var(--text2);cursor:pointer;font-size:18px;padding:4px 8px;}
+    .table-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+    .table-toolbar .search-wrap{flex:1;min-width:180px;}
+    .filter-select{padding:6px 10px;font-size:12px;font-family:'DM Mono',monospace;}
+    .count-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-left:auto;white-space:nowrap;}
+    .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);}
+
+    .cls-row-0 td { border-left: 3px solid var(--cls0); }
+    .cls-row-1 td { border-left: 3px solid var(--cls1); }
+    .cls-row-2 td { border-left: 3px solid var(--cls2); }
+    .cls-row-3 td { border-left: 3px solid var(--cls3); }
+    .cls-row-4 td { border-left: 3px solid var(--cls4); }
+
+    /* Legend */
+    .legend { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    [data-page="lexium"] .nav-item[href="table-lexium.html"] { color: var(--accent) !important; background: var(--accent-dim) !important; }
+    @media (max-width: 768px) { .hamburger { display: block; } }
+  </style>
+</head>
+<body data-page="lexium">
+
+<div class="app-shell">
+  <header class="app-header">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <div class="header-brand">
+      <div class="logo-mark">OD</div>
+      <span>OUIDROP</span>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-ghost btn-sm" onclick="logout()">⏻</button>
+    </div>
+  </header>
+
+  <aside class="app-sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">Navigation</div>
+      <a class="nav-item" href="index.html"><span class="icon">⌂</span> Tableau de bord</a>
+      <a class="nav-item" href="search.html"><span class="icon">⌕</span> Recherche erreurs</a>
+      <a class="nav-item" href="table-automate.html"><span class="icon">⊞</span> Table Automate</a>
+      <a class="nav-item active" href="table-lexium.html"><span class="icon">⊟</span> Table Lexium</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Outils</div>
+      <a class="nav-item" href="notes.html"><span class="icon">✎</span> Notes de ticket</a>
+      <a class="nav-item" href="stats.html"><span class="icon">◈</span> Statistiques</a>
+    </div>
+    <div class="nav-section">
+      <button class="nav-item" onclick="logout()"><span class="icon">⏻</span> Déconnexion</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <main class="app-main">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+      <h2>Table Lexium</h2>
+      <span class="badge badge-lexium" id="totalBadge">—</span>
+    </div>
+
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:var(--cls0)"></span>Classe 0 Info</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--cls1)"></span>Classe 1 Avertissement</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--cls2)"></span>Classe 2 Récupérable</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--cls3)"></span>Classe 3 Grave</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--cls4)"></span>Classe 4 Fatale</span>
+    </div>
+
+    <div class="table-toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input class="search-input" id="filterInput" type="text" placeholder="Code DEC, HEX, description…" oninput="applyFilters()">
+        <button class="search-clear" id="filterClear" onclick="clearFilter()">✕</button>
+      </div>
+      <select class="filter-select" id="clsFilter" onchange="applyFilters()">
+        <option value="">Toutes classes</option>
+        <option value="0">Classe 0 — Info</option>
+        <option value="1">Classe 1 — Avertissement</option>
+        <option value="2">Classe 2 — Récupérable</option>
+        <option value="3">Classe 3 — Grave</option>
+        <option value="4">Classe 4 — Fatale</option>
+      </select>
+      <select class="filter-select" id="docFilter" onchange="applyFilters()">
+        <option value="">Tous</option>
+        <option value="documented">Documentés</option>
+        <option value="missing">Non documentés</option>
+      </select>
+      <span class="count-label" id="countLabel"></span>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table" id="mainTable">
+        <thead>
+          <tr>
+            <th onclick="sortBy('codeDec')" data-col="codeDec">Code DEC <span class="sort-icon">⇅</span></th>
+            <th onclick="sortBy('codeHex')" data-col="codeHex">Code HEX <span class="sort-icon">⇅</span></th>
+            <th onclick="sortBy('classe')" data-col="classe">Classe <span class="sort-icon">⇅</span></th>
+            <th onclick="sortBy('description')" data-col="description">Description <span class="sort-icon">⇅</span></th>
+            <th>Résolution</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted);">Chargement…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script src="core.js"></script>
+<script>
+if (!requireAuth()) throw new Error('Not authenticated');
+
+let db = null;
+let data = [];
+let sortCol = 'codeDec';
+let sortDir = 1;
+
+(async function init() {
+  try { db = await getDB(); }
+  catch(e) { db = getSampleData(); toast('Mode démo', 'warn'); }
+  data = db.lexium || [];
+  document.getElementById('totalBadge').textContent = `${data.length} codes`;
+  renderTable(data);
+})();
+
+function applyFilters() {
+  const q   = document.getElementById('filterInput').value.trim();
+  const cls = document.getElementById('clsFilter').value;
+  const doc = document.getElementById('docFilter').value;
+  document.getElementById('filterClear').style.display = q ? 'block' : 'none';
+
+  let rows = data;
+  if (q)   rows = rows.filter(r => fuzzyMatch(q, r.codeDec) || fuzzyMatch(q, r.codeHex) || fuzzyMatch(q, r.description) || fuzzyMatch(q, r.cause));
+  if (cls) rows = rows.filter(r => String(r.classe) === cls);
+  if (doc === 'documented') rows = rows.filter(r => !isMissing(r.mesures));
+  if (doc === 'missing')    rows = rows.filter(r => isMissing(r.mesures));
+  renderTable(rows);
+}
+
+function clearFilter() {
+  document.getElementById('filterInput').value = '';
+  document.getElementById('filterClear').style.display = 'none';
+  applyFilters();
+}
+
+function sortBy(col) {
+  if (sortCol === col) sortDir *= -1;
+  else { sortCol = col; sortDir = 1; }
+  document.querySelectorAll('.data-table th[data-col]').forEach(th => {
+    th.classList.toggle('sorted', th.dataset.col === col);
+  });
+  applyFilters();
+}
+
+function renderTable(rows) {
+  rows = [...rows].sort((a, b) => {
+    const av = a[sortCol] || ''; const bv = b[sortCol] || '';
+    return sortDir * av.localeCompare(bv, 'fr', { numeric: true });
+  });
+
+  document.getElementById('countLabel').textContent = `${rows.length} ligne${rows.length > 1 ? 's' : ''}`;
+  const tbody = document.getElementById('tableBody');
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted);">Aucun résultat</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(r => {
+    const cls    = String(r.classe || '0');
+    const noRes  = isMissing(r.mesures);
+    const trunc  = (s, n) => s && s.length > n ? s.slice(0,n)+'…' : (s||'');
+    return `<tr class="cls-row-${cls}" onclick="goToError('${r.codeDec}','lexium')" style="cursor:pointer;">
+      <td class="code-cell">${r.codeDec}</td>
+      <td class="code-cell" style="color:var(--text2);font-size:11px;">${r.codeHex || '—'}</td>
+      <td><span class="badge cls-badge-${cls}">${cls} — ${severityLabel(cls)}</span></td>
+      <td class="desc-cell">${trunc(r.description, 80)}</td>
+      <td>${noRes
+        ? `<span class="badge badge-missing">⊘ Non documenté</span>`
+        : `<span class="badge badge-ok">✓ Documenté</span>`
+      }</td>
+    </tr>`;
+  }).join('');
+}
+
+function goToError(code, source) {
+  addToHistory(code, source);
+  window.location.href = `error.html?code=${code}&source=${source}`;
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('active');
+}
+</script>
+</body>
+</html>

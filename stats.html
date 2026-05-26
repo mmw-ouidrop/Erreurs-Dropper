@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OUIDROP — Statistiques</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .header-brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;}
+    .logo-mark{width:32px;height:32px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:var(--bg);clip-path:polygon(0 0,100% 0,100% 75%,75% 100%,0 100%);flex-shrink:0;}
+    .header-right{display:flex;align-items:center;gap:8px;margin-left:auto;}
+    .hamburger{display:none;background:none;border:none;color:var(--text2);cursor:pointer;font-size:18px;padding:4px 8px;}
+
+    /* ── Stats grid ─────────────────────────── */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .stat-block {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px;
+    }
+    .stat-block h3 { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+
+    /* Bar chart */
+    .bar-chart { display: flex; flex-direction: column; gap: 8px; }
+    .bar-row { display: flex; align-items: center; gap: 10px; }
+    .bar-label { font-size: 11px; color: var(--text2); min-width: 80px; font-family: 'DM Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-wrap { flex: 1; background: var(--bg); border-radius: 2px; height: 14px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+    .bar-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); min-width: 26px; text-align: right; }
+
+    /* Donut via SVG */
+    .donut-wrap { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .donut-legend { display: flex; flex-direction: column; gap: 6px; }
+    .donut-leg-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text2); }
+    .donut-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+    /* Top searched */
+    .top-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .top-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+    .top-item:last-child { border-bottom: none; }
+    .top-rank { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); width: 18px; text-align: center; }
+    .top-code { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--accent); }
+    .top-n    { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-left: auto; }
+
+    /* Full-width */
+    .full { grid-column: 1 / -1; }
+
+    [data-page="stats"] .nav-item[href="stats.html"] { color: var(--accent) !important; background: var(--accent-dim) !important; }
+    @media (max-width: 768px) { .hamburger { display: block; } .stats-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body data-page="stats">
+
+<div class="app-shell">
+  <header class="app-header">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <div class="header-brand">
+      <div class="logo-mark">OD</div>
+      <span>OUIDROP</span>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-ghost btn-sm" onclick="logout()">⏻</button>
+    </div>
+  </header>
+
+  <aside class="app-sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">Navigation</div>
+      <a class="nav-item" href="index.html"><span class="icon">⌂</span> Tableau de bord</a>
+      <a class="nav-item" href="search.html"><span class="icon">⌕</span> Recherche erreurs</a>
+      <a class="nav-item" href="table-automate.html"><span class="icon">⊞</span> Table Automate</a>
+      <a class="nav-item" href="table-lexium.html"><span class="icon">⊟</span> Table Lexium</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Outils</div>
+      <a class="nav-item" href="notes.html"><span class="icon">✎</span> Notes de ticket</a>
+      <a class="nav-item active" href="stats.html"><span class="icon">◈</span> Statistiques</a>
+    </div>
+    <div class="nav-section">
+      <button class="nav-item" onclick="logout()"><span class="icon">⏻</span> Déconnexion</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <main class="app-main">
+    <h2 style="margin-bottom:20px;">Statistiques</h2>
+
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-block full" style="text-align:center;padding:48px;color:var(--muted);">
+        <p>Chargement…</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="core.js"></script>
+<script>
+if (!requireAuth()) throw new Error('Not authenticated');
+
+let db = null;
+
+(async function init() {
+  try { db = await getDB(); }
+  catch(e) { db = getSampleData(); toast('Mode démo', 'warn'); }
+  renderStats();
+})();
+
+function renderStats() {
+  const auto  = db.automate || [];
+  const lex   = db.lexium   || [];
+  const hist  = getHistory();
+  const notes = getNotes();
+
+  // ── Computed data ─────────────────────────────
+  // 1. Documentation rate
+  const autoDoc  = auto.filter(r => !isMissing(r.mesures)).length;
+  const lexDoc   = lex.filter(r => !isMissing(r.mesures)).length;
+  const totalDoc = autoDoc + lexDoc;
+  const total    = auto.length + lex.length;
+
+  // 2. Emplacements
+  const empMap = {};
+  auto.forEach(r => { empMap[r.emplacement || 'N/A'] = (empMap[r.emplacement || 'N/A'] || 0) + 1; });
+  const empTop = Object.entries(empMap).sort((a,b) => b[1]-a[1]).slice(0, 8);
+
+  // 3. Classes Lexium
+  const clsMap = {0:0, 1:0, 2:0, 3:0, 4:0};
+  lex.forEach(r => { const c = parseInt(r.classe)||0; clsMap[c] = (clsMap[c]||0)+1; });
+
+  // 4. Top searched
+  const codeFreq = {};
+  hist.forEach(h => { codeFreq[`${h.source}::${h.code}`] = (codeFreq[`${h.source}::${h.code}`]||0)+1; });
+  const topSearched = Object.entries(codeFreq).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+  // 5. Missing résolutions
+  const autoMissing = auto.filter(r => isMissing(r.mesures)).sort((a,b) => {
+    // Count how often they appear in history
+    const fa = codeFreq[`automate::${a.code}`]||0;
+    const fb = codeFreq[`automate::${b.code}`]||0;
+    return fb - fa;
+  }).slice(0, 8);
+
+  const notesCount = Object.keys(notes).length;
+
+  // ── Render ────────────────────────────────────
+  const clsColors = ['var(--cls0)','var(--cls1)','var(--cls2)','var(--cls3)','var(--cls4)'];
+  const clsLabels = ['Classe 0 Info','Classe 1 Avertissement','Classe 2 Récupérable','Classe 3 Grave','Classe 4 Fatale'];
+
+  document.getElementById('statsGrid').innerHTML = `
+    <!-- KPI row -->
+    <div class="stat-block" style="display:flex;flex-direction:column;justify-content:center;">
+      <div style="font-family:'DM Mono',monospace;font-size:42px;font-weight:500;color:var(--accent);line-height:1;">${total}</div>
+      <div class="label" style="margin-top:8px;">Codes erreur total</div>
+      <div style="margin-top:16px;display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;">
+          <span style="color:var(--text2);">Automate</span>
+          <span style="font-family:'DM Mono',monospace;color:var(--info);">${auto.length}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;">
+          <span style="color:var(--text2);">Lexium</span>
+          <span style="font-family:'DM Mono',monospace;color:var(--accent);">${lex.length}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;">
+          <span style="color:var(--text2);">Notes de ticket</span>
+          <span style="font-family:'DM Mono',monospace;color:var(--ok);">${notesCount}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documentation rate -->
+    <div class="stat-block">
+      <h3>Taux de documentation</h3>
+      ${donutSVG(totalDoc, total - totalDoc)}
+      <div class="donut-wrap" style="margin-top:12px;">
+        <div class="donut-legend">
+          <div class="donut-leg-item"><div class="donut-dot" style="background:var(--ok)"></div>Documentés : ${totalDoc} (${pct(totalDoc,total)}%)</div>
+          <div class="donut-leg-item"><div class="donut-dot" style="background:var(--warn)"></div>Non documentés : ${total - totalDoc} (${pct(total-totalDoc,total)}%)</div>
+          <div class="donut-leg-item" style="margin-top:4px;font-size:11px;">
+            — Automate : ${autoDoc}/${auto.length} (${pct(autoDoc,auto.length)}%)<br>
+            &nbsp;&nbsp; Lexium : ${lexDoc}/${lex.length} (${pct(lexDoc,lex.length)}%)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Emplacements automate -->
+    <div class="stat-block">
+      <h3>Codes par emplacement (Automate)</h3>
+      <div class="bar-chart">
+        ${empTop.map(([label, val], i) => {
+          const w = Math.round(val / empTop[0][1] * 100);
+          const hue = 200 + i * 20;
+          return `<div class="bar-row">
+            <span class="bar-label" title="${label}">${label}</span>
+            <div class="bar-wrap"><div class="bar-fill" style="width:${w}%;background:hsl(${hue},60%,55%);"></div></div>
+            <span class="bar-val">${val}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- Classes Lexium -->
+    <div class="stat-block">
+      <h3>Distribution des classes (Lexium)</h3>
+      <div class="bar-chart">
+        ${Object.entries(clsMap).map(([cls, val]) => {
+          const tot2 = lex.length || 1;
+          const w = Math.round(val / tot2 * 100);
+          return `<div class="bar-row">
+            <span class="bar-label">Classe ${cls}</span>
+            <div class="bar-wrap"><div class="bar-fill" style="width:${w}%;background:${clsColors[cls]};"></div></div>
+            <span class="bar-val">${val}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- Top searched -->
+    <div class="stat-block">
+      <h3>Erreurs les plus recherchées (session)</h3>
+      ${topSearched.length === 0
+        ? `<p style="font-size:12px;color:var(--muted);">Aucune recherche enregistrée.</p>`
+        : `<ul class="top-list">
+          ${topSearched.map(([key, n], i) => {
+            const [src, code] = key.split('::');
+            const srcBadge = src === 'lexium'
+              ? `<span class="badge badge-lexium" style="font-size:9px;">Lex</span>`
+              : `<span class="badge badge-automate" style="font-size:9px;">Aut</span>`;
+            return `<li class="top-item" onclick="goToError('${code}','${src}')" style="cursor:pointer;">
+              <span class="top-rank">${i+1}</span>
+              ${srcBadge}
+              <span class="top-code">${code}</span>
+              <span class="top-n">${n}×</span>
+            </li>`;
+          }).join('')}
+        </ul>`
+      }
+    </div>
+
+    <!-- Missing + most searched -->
+    <div class="stat-block">
+      <h3>Résolutions manquantes (Automate)</h3>
+      ${autoMissing.length === 0
+        ? `<p style="font-size:12px;color:var(--ok);">✓ Toutes les résolutions Automate sont documentées !</p>`
+        : `<ul class="top-list">
+          ${autoMissing.map((r,i) => {
+            const freq = codeFreq[`automate::${r.code}`]||0;
+            return `<li class="top-item" onclick="goToError('${r.code}','automate')" style="cursor:pointer;">
+              <span class="top-rank">${i+1}</span>
+              <span class="top-code">${r.code}</span>
+              <span style="font-size:11px;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.emplacement || ''}</span>
+              ${freq > 0 ? `<span class="badge badge-warn" style="font-size:9px;">${freq}× recherché</span>` : ''}
+            </li>`;
+          }).join('')}
+        </ul>`
+      }
+    </div>
+  `;
+}
+
+function pct(a, b) { return b ? Math.round(a/b*100) : 0; }
+
+function donutSVG(doc, missing) {
+  const total = doc + missing;
+  if (total === 0) return '<p style="color:var(--muted);font-size:12px;">Aucune donnée</p>';
+  const r = 36, cx = 50, cy = 50, stroke = 12;
+  const circ = 2 * Math.PI * r;
+  const docPct = doc / total;
+  const d1 = docPct * circ;
+  const d2 = circ - d1;
+  return `<svg viewBox="0 0 100 100" width="80" height="80">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${stroke}"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--ok)" stroke-width="${stroke}"
+      stroke-dasharray="${d1} ${d2}" stroke-dashoffset="${circ/4}"
+      transform="rotate(-90 ${cx} ${cy})" style="transition:stroke-dasharray 0.5s;"/>
+    <text x="${cx}" y="${cy+2}" text-anchor="middle" dominant-baseline="middle"
+      font-family="'DM Mono',monospace" font-size="14" fill="var(--text)" font-weight="500">${pct(doc,total)}%</text>
+  </svg>`;
+}
+
+function goToError(code, source) {
+  addToHistory(code, source);
+  window.location.href = `error.html?code=${code}&source=${source}`;
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('active');
+}
+</script>
+</body>
+</html>

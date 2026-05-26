@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OUIDROP — Tableau de bord</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── Page-specific ─────────────────────── */
+    .header-brand {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 800; font-size: 18px; letter-spacing: -0.3px;
+    }
+    .logo-mark {
+      width: 32px; height: 32px; background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 13px; color: var(--bg);
+      clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%);
+      flex-shrink: 0;
+    }
+    .header-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .sync-info {
+      font-family: 'DM Mono', monospace; font-size: 10px;
+      color: var(--muted); white-space: nowrap;
+    }
+    .hamburger {
+      display: none; background: none; border: none;
+      color: var(--text2); cursor: pointer; font-size: 18px; padding: 4px 8px;
+    }
+
+    /* ── Home grid ─────────────────────────── */
+    .home-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 16px;
+    }
+    .span2 { grid-column: 1 / -1; }
+
+    /* ── Search hero ───────────────────────── */
+    .search-hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .search-hero::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .search-hero-title {
+      font-size: 13px; font-weight: 600; color: var(--text2);
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+    .search-tabs {
+      display: flex; gap: 6px; margin-bottom: 14px;
+    }
+    .tab-btn {
+      padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 700;
+      cursor: pointer; border: 1px solid var(--border); background: transparent;
+      color: var(--muted); transition: all 0.15s; font-family: 'Syne', sans-serif;
+    }
+    .tab-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+    /* autocomplete */
+    .search-dropdown {
+      position: absolute; left: 0; right: 0;
+      background: var(--surface2); border: 1px solid var(--border2);
+      border-top: none; border-radius: 0 0 var(--radius) var(--radius);
+      z-index: 200; max-height: 280px; overflow-y: auto; display: none;
+    }
+    .search-dropdown.open { display: block; }
+    .dropdown-item {
+      padding: 10px 16px; cursor: pointer; display: flex;
+      align-items: center; gap: 12px; border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+    .dropdown-item:hover, .dropdown-item.focused { background: var(--surface); }
+    .dropdown-item:last-child { border-bottom: none; }
+    .dropdown-code {
+      font-family: 'DM Mono', monospace; font-size: 13px;
+      color: var(--accent); white-space: nowrap;
+    }
+    .dropdown-desc { font-size: 12px; color: var(--text2); flex: 1; }
+    .dropdown-src { font-size: 10px; margin-left: auto; }
+
+    /* ── Stats row ─────────────────────────── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+    }
+    .stat-val {
+      font-size: 28px; font-weight: 800; line-height: 1;
+      font-family: 'DM Mono', monospace;
+    }
+    .stat-label { font-size: 11px; color: var(--muted); margin-top: 6px; }
+    .stat-card.accent-border { border-top: 2px solid var(--accent); }
+    .stat-card.ok-border { border-top: 2px solid var(--ok); }
+    .stat-card.warn-border { border-top: 2px solid var(--warn); }
+    .stat-card.error-border { border-top: 2px solid var(--error); }
+
+    /* ── History ───────────────────────────── */
+    .history-list { list-style: none; }
+    .history-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 0; border-bottom: 1px solid var(--border);
+      cursor: pointer; transition: padding-left 0.15s;
+    }
+    .history-item:hover { padding-left: 4px; }
+    .history-item:last-child { border-bottom: none; }
+    .history-code {
+      font-family: 'DM Mono', monospace; font-size: 13px;
+      font-weight: 500; color: var(--accent);
+    }
+    .history-desc { font-size: 12px; color: var(--text2); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .history-ts { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); white-space: nowrap; text-align: right; }
+
+    /* ── Links ─────────────────────────────── */
+    .links-grid { display: flex; flex-direction: column; gap: 6px; }
+    .link-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; background: var(--bg);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      text-decoration: none; color: var(--text); transition: all 0.15s;
+    }
+    .link-item:hover { border-color: var(--border2); background: var(--surface2); }
+    .link-item .link-icon { font-size: 14px; }
+    .link-item .link-title { font-size: 13px; font-weight: 600; flex: 1; }
+    .link-item .link-domain { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+    .link-item .link-del {
+      background: none; border: none; color: var(--muted); cursor: pointer;
+      font-size: 14px; padding: 2px 4px; line-height: 1;
+      border-radius: 3px; opacity: 0.5; transition: opacity 0.15s;
+    }
+    .link-item:hover .link-del { opacity: 1; }
+    .add-link-form { display: none; margin-top: 8px; }
+    .add-link-form.open { display: flex; flex-direction: column; gap: 8px; }
+    .add-link-form input { padding: 8px 12px; width: 100%; }
+
+    /* ── Missing table preview ─────────────── */
+    .missing-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-family: 'DM Mono', monospace; font-size: 10px;
+      color: var(--muted); background: rgba(107,115,133,0.1);
+      border: 1px solid var(--border); border-radius: 3px; padding: 1px 6px;
+    }
+
+    /* ── Nav active states ─────────────────── */
+    [data-page="home"] .nav-home { color: var(--accent) !important; background: var(--accent-dim) !important; }
+
+    @media (max-width: 768px) {
+      .hamburger { display: block; }
+      .home-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .sync-info { display: none; }
+    }
+    @media (max-width: 420px) {
+      .stats-row { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body data-page="home">
+
+<!-- ── Header ─────────────────────────────────── -->
+<div class="app-shell">
+  <header class="app-header">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <div class="header-brand">
+      <div class="logo-mark">OD</div>
+      <span>OUIDROP</span>
+    </div>
+    <div class="header-right">
+      <span class="sync-info" id="syncInfo">Chargement…</span>
+      <button class="btn btn-ghost btn-sm" onclick="refreshDB()" id="refreshBtn" title="Actualiser la BDD">⟳ Actualiser</button>
+      <button class="btn btn-ghost btn-sm" onclick="logout()" title="Déconnexion">⏻</button>
+    </div>
+  </header>
+
+  <!-- ── Sidebar ──────────────────────────────── -->
+  <aside class="app-sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">Navigation</div>
+      <a class="nav-item nav-home active" href="index.html">
+        <span class="icon">⌂</span> Tableau de bord
+      </a>
+      <a class="nav-item" href="search.html">
+        <span class="icon">⌕</span> Recherche erreurs
+      </a>
+      <a class="nav-item" href="table-automate.html">
+        <span class="icon">⊞</span> Table Automate
+      </a>
+      <a class="nav-item" href="table-lexium.html">
+        <span class="icon">⊟</span> Table Lexium
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Outils</div>
+      <a class="nav-item" href="notes.html">
+        <span class="icon">✎</span> Notes de ticket
+      </a>
+      <a class="nav-item" href="stats.html">
+        <span class="icon">◈</span> Statistiques
+      </a>
+    </div>
+    <div class="nav-section" style="margin-top: auto; padding-top: 16px;">
+      <div class="nav-section-title">Compte</div>
+      <button class="nav-item" onclick="logout()">
+        <span class="icon">⏻</span> Déconnexion
+      </button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- ── Main ─────────────────────────────────── -->
+  <main class="app-main">
+    <div class="home-grid">
+
+      <!-- Search hero -->
+      <div class="search-hero span2">
+        <div class="search-hero-title">
+          🔍 Recherche rapide
+        </div>
+        <div class="search-tabs">
+          <button class="tab-btn active" data-tab="all" onclick="setTab(this,'all')">Toutes</button>
+          <button class="tab-btn" data-tab="automate" onclick="setTab(this,'automate')">Automate</button>
+          <button class="tab-btn" data-tab="lexium" onclick="setTab(this,'lexium')">Lexium</button>
+        </div>
+        <div style="position:relative;">
+          <div class="search-wrap">
+            <span class="search-icon">⌕</span>
+            <input class="search-input" id="heroSearch" type="text"
+              placeholder="Code erreur ou mot-clé…" autocomplete="off"
+              oninput="onHeroSearch()" onkeydown="onHeroKey(event)">
+            <button class="search-clear" id="heroClear" onclick="clearHeroSearch()">✕</button>
+          </div>
+          <div class="search-dropdown" id="heroDropdown"></div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row span2" id="statsRow">
+        <div class="stat-card accent-border">
+          <div class="stat-val" id="statTotal">—</div>
+          <div class="stat-label">Codes erreur total</div>
+        </div>
+        <div class="stat-card ok-border">
+          <div class="stat-val" id="statAutomate">—</div>
+          <div class="stat-label">Codes Automate</div>
+        </div>
+        <div class="stat-card ok-border">
+          <div class="stat-val" id="statLexium">—</div>
+          <div class="stat-label">Codes Lexium</div>
+        </div>
+        <div class="stat-card warn-border">
+          <div class="stat-val" id="statMissing">—</div>
+          <div class="stat-label">Sans résolution documentée</div>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🕐 Historique de recherche</h3>
+          <button class="btn btn-ghost btn-sm" onclick="clearHistoryUI()">Effacer</button>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <ul class="history-list" id="historyList" style="padding: 0 18px;"></ul>
+          <div class="empty-state" id="historyEmpty" style="display:none;">
+            <div class="empty-icon">⊘</div>
+            <p>Aucune recherche récente</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick links -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🔗 Liens rapides</h3>
+          <button class="btn btn-ghost btn-sm" id="addLinkToggle" onclick="toggleAddLink()">+ Ajouter</button>
+        </div>
+        <div class="card-body">
+          <div class="links-grid" id="linksGrid"></div>
+          <div class="add-link-form" id="addLinkForm">
+            <input type="text" id="newLinkTitle" placeholder="Titre du lien">
+            <input type="url" id="newLinkUrl" placeholder="https://…">
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-primary" style="flex:1" onclick="addUserLink()">Ajouter</button>
+              <button class="btn btn-ghost" onclick="toggleAddLink()">Annuler</button>
+            </div>
+          </div>
+          <div class="empty-state" id="linksEmpty" style="display:none; padding: 24px;">
+            <p>Aucun lien configuré</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /home-grid -->
+  </main>
+</div><!-- /app-shell -->
+
+<script src="core.js"></script>
+<script>
+// ── Boot ────────────────────────────────────────────
+if (!requireAuth()) throw new Error('Not authenticated');
+
+let db = null;
+let currentTab = 'all';
+let focusedIdx = -1;
+
+(async function init() {
+  try {
+    showSyncLoading();
+    db = await getDB();
+    updateStats();
+    updateSyncInfo();
+  } catch(e) {
+    // Fallback sur données de démo
+    db = getSampleData();
+    updateStats();
+    document.getElementById('syncInfo').textContent = '⚠ Mode démo (GAS non configuré)';
+    toast('GAS non configuré — données de démo chargées', 'warn', 5000);
+  }
+  renderHistory();
+  renderLinks();
+})();
+
+// ── DB sync ─────────────────────────────────────────
+function showSyncLoading() {
+  document.getElementById('syncInfo').textContent = '↻ Synchronisation…';
+  document.getElementById('refreshBtn').disabled = true;
+}
+
+function updateSyncInfo() {
+  const age = getCacheAge();
+  document.getElementById('syncInfo').textContent = age ? `Sync ${age}` : 'Jamais synchronisé';
+  document.getElementById('refreshBtn').disabled = false;
+}
+
+async function refreshDB() {
+  try {
+    showSyncLoading();
+    db = await getDB(true);
+    updateStats();
+    updateSyncInfo();
+    toast('Base de données mise à jour !', 'success');
+  } catch(e) {
+    toast('Erreur de synchronisation', 'error');
+    document.getElementById('refreshBtn').disabled = false;
+  }
+}
+
+// ── Stats ────────────────────────────────────────────
+function updateStats() {
+  if (!db) return;
+  const tot = (db.automate?.length||0) + (db.lexium?.length||0);
+  const missing = [
+    ...(db.automate||[]).filter(r => isMissing(r.mesures)),
+    ...(db.lexium||[]).filter(r => isMissing(r.mesures)),
+  ].length;
+  document.getElementById('statTotal').textContent    = tot;
+  document.getElementById('statAutomate').textContent = db.automate?.length || 0;
+  document.getElementById('statLexium').textContent   = db.lexium?.length || 0;
+  document.getElementById('statMissing').textContent  = missing;
+}
+
+// ── Tab ──────────────────────────────────────────────
+function setTab(btn, tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  onHeroSearch();
+}
+
+// ── Hero search ──────────────────────────────────────
+function onHeroSearch() {
+  const q = document.getElementById('heroSearch').value.trim();
+  document.getElementById('heroClear').style.display = q ? 'block' : 'none';
+  focusedIdx = -1;
+  if (!q || !db) { closeDropdown(); return; }
+
+  const results = searchDB(q, currentTab).slice(0, 10);
+  renderDropdown(results, q);
+}
+
+function searchDB(q, tab) {
+  const results = [];
+  if (tab !== 'lexium') {
+    (db.automate||[]).forEach(r => {
+      if (fuzzyMatch(q, r.code) || fuzzyMatch(q, r.description) || fuzzyMatch(q, r.emplacement))
+        results.push({ ...r, _source: 'automate' });
+    });
+  }
+  if (tab !== 'automate') {
+    (db.lexium||[]).forEach(r => {
+      if (fuzzyMatch(q, r.codeDec) || fuzzyMatch(q, r.codeHex) || fuzzyMatch(q, r.description))
+        results.push({ ...r, _source: 'lexium' });
+    });
+  }
+  return results;
+}
+
+function renderDropdown(results, q) {
+  const dd = document.getElementById('heroDropdown');
+  if (!results.length) {
+    dd.innerHTML = `<div class="dropdown-item" style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;">Aucun résultat pour "${q}"</div>`;
+    dd.classList.add('open');
+    return;
+  }
+  dd.innerHTML = results.map((r, i) => {
+    const code = r._source === 'lexium' ? r.codeDec : r.code;
+    const src  = r._source === 'lexium'
+      ? `<span class="badge badge-lexium dropdown-src">Lexium</span>`
+      : `<span class="badge badge-automate dropdown-src">Automate</span>`;
+    return `<div class="dropdown-item" data-idx="${i}" data-code="${code}" data-source="${r._source}" onclick="goToError('${code}','${r._source}')">
+      <span class="dropdown-code">${code}</span>
+      <span class="dropdown-desc">${r.description}</span>
+      ${src}
+    </div>`;
+  }).join('');
+  dd.classList.add('open');
+}
+
+function closeDropdown() {
+  document.getElementById('heroDropdown').classList.remove('open');
+}
+
+function onHeroKey(e) {
+  const items = document.querySelectorAll('#heroDropdown .dropdown-item[data-code]');
+  if (!items.length) return;
+  if (e.key === 'ArrowDown') {
+    focusedIdx = Math.min(focusedIdx + 1, items.length - 1);
+    updateFocus(items);
+    e.preventDefault();
+  } else if (e.key === 'ArrowUp') {
+    focusedIdx = Math.max(focusedIdx - 1, 0);
+    updateFocus(items);
+    e.preventDefault();
+  } else if (e.key === 'Enter') {
+    if (focusedIdx >= 0) items[focusedIdx].click();
+    else if (items.length) items[0].click();
+  } else if (e.key === 'Escape') {
+    closeDropdown();
+  }
+}
+
+function updateFocus(items) {
+  items.forEach((el, i) => el.classList.toggle('focused', i === focusedIdx));
+  if (focusedIdx >= 0) items[focusedIdx].scrollIntoView({ block: 'nearest' });
+}
+
+function clearHeroSearch() {
+  document.getElementById('heroSearch').value = '';
+  document.getElementById('heroClear').style.display = 'none';
+  closeDropdown();
+}
+
+function goToError(code, source) {
+  // Sauvegarder dans l'historique
+  if (db) {
+    const rec = source === 'lexium'
+      ? db.lexium?.find(r => r.codeDec === code)
+      : db.automate?.find(r => r.code === code);
+    if (rec) addToHistory(code, source);
+  }
+  const params = new URLSearchParams({ code, source });
+  window.location.href = `error.html?${params}`;
+}
+
+// Fermer dropdown au clic extérieur
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-hero')) closeDropdown();
+});
+
+// ── History ──────────────────────────────────────────
+function renderHistory() {
+  const hist = getHistory().slice(0, 15);
+  const list = document.getElementById('historyList');
+  const empty = document.getElementById('historyEmpty');
+  if (!hist.length) { list.style.display='none'; empty.style.display='block'; return; }
+  list.style.display = 'block'; empty.style.display = 'none';
+
+  list.innerHTML = hist.map(h => {
+    let desc = '';
+    if (db) {
+      const rec = h.source === 'lexium'
+        ? db.lexium?.find(r => r.codeDec === h.code)
+        : db.automate?.find(r => r.code === h.code);
+      desc = rec ? (rec.description || '') : '';
+    }
+    const src = h.source === 'lexium'
+      ? `<span class="badge badge-lexium" style="font-size:9px;">Lex</span>`
+      : `<span class="badge badge-automate" style="font-size:9px;">Aut</span>`;
+    return `<li class="history-item" onclick="goToError('${h.code}','${h.source}')">
+      ${src}
+      <span class="history-code">${h.code}</span>
+      <span class="history-desc">${desc}</span>
+      <span class="history-ts">${fmtDateShort(h.ts)}</span>
+    </li>`;
+  }).join('');
+}
+
+function clearHistoryUI() {
+  clearHistory();
+  renderHistory();
+  toast('Historique effacé', 'info');
+}
+
+// ── Links ────────────────────────────────────────────
+function renderLinks() {
+  const grid = document.getElementById('linksGrid');
+  const empty = document.getElementById('linksEmpty');
+
+  const gasLinks  = (db?.liens || []).map(l => ({ ...l, _type: 'gas' }));
+  const userLinks = getUserLinks().map(l => ({ ...l, _type: 'user' }));
+  const all = [...gasLinks, ...userLinks];
+
+  if (!all.length) { grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display = 'none';
+
+  grid.innerHTML = all.map((l, i) => {
+    let domain = '';
+    try { domain = new URL(l.url).hostname.replace('www.',''); } catch(e) {}
+    const isDel = l._type === 'user';
+    return `<a class="link-item" href="${l.url}" target="_blank" rel="noopener">
+      <span class="link-icon">🔗</span>
+      <span class="link-title">${l.titre || l.title}</span>
+      <span class="link-domain">${domain}</span>
+      ${isDel ? `<button class="link-del" onclick="delUserLink(event,${i - gasLinks.length})">✕</button>` : ''}
+    </a>`;
+  }).join('');
+}
+
+function toggleAddLink() {
+  const form = document.getElementById('addLinkForm');
+  form.classList.toggle('open');
+  if (form.classList.contains('open')) document.getElementById('newLinkTitle').focus();
+}
+
+function addUserLink() {
+  const title = document.getElementById('newLinkTitle').value.trim();
+  const url   = document.getElementById('newLinkUrl').value.trim();
+  if (!title || !url) { toast('Titre et URL requis', 'warn'); return; }
+  const links = getUserLinks();
+  links.push({ titre: title, url });
+  saveUserLinks(links);
+  document.getElementById('newLinkTitle').value = '';
+  document.getElementById('newLinkUrl').value = '';
+  toggleAddLink();
+  renderLinks();
+  toast('Lien ajouté !', 'success');
+}
+
+function delUserLink(e, idx) {
+  e.preventDefault(); e.stopPropagation();
+  const links = getUserLinks();
+  links.splice(idx, 1);
+  saveUserLinks(links);
+  renderLinks();
+}
+
+// ── Mobile sidebar ───────────────────────────────────
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('active');
+}
+</script>
+</body>
+</html>
