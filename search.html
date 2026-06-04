@@ -65,12 +65,13 @@
 <div class="app-shell">
   <header class="app-header">
     <button class="hamburger" onclick="toggleSidebar()">☰</button>
-    <div class="header-brand">
+    <div class="header-brand" onclick="window.location.href='index.html'" style="cursor:pointer;" title="Accueil">
       
       <span>OUIDROP</span>
     </div>
     <div class="header-right">
-      <button class="btn btn-ghost btn-sm" onclick="logout()">⏻</button>
+        <button class="btn btn-ghost btn-sm" onclick="window.location.href='search.html'" title="Recherche rapide">⌕</button>
+<button class="btn btn-ghost btn-sm" onclick="logout()">⏻</button>
     </div>
   </header>
 
