@@ -1,250 +1,675 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OUIDROP — Recherche</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
-    .header-brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;}
-    .header-right{display:flex;align-items:center;gap:8px;margin-left:auto;}
-    .hamburger{display:none;background:none;border:none;color:var(--text2);cursor:pointer;font-size:18px;padding:4px 8px;}
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      color: var(--bg);
+      clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%);
+      flex-shrink: 0;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text2);
+      cursor: pointer;
+      font-size: 18px;
+      padding: 4px 8px;
+    }
 
     /* ── Search bar top ─────────────────────── */
     .search-top {
-      display: flex; gap: 10px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      align-items: center;
+      flex-wrap: wrap;
     }
-    .search-top .search-wrap { flex: 1; min-width: 200px; }
+
+    .search-top .search-wrap {
+      flex: 1;
+      min-width: 200px;
+    }
+
     .filter-bar {
-      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
       margin-bottom: 16px;
     }
+
     .filter-select {
-      padding: 6px 10px; font-size: 12px; font-family: 'DM Mono', monospace;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-family: 'DM Mono', monospace;
     }
+
     .result-count {
-      font-family: 'DM Mono', monospace; font-size: 11px;
-      color: var(--muted); margin-left: auto;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: auto;
     }
 
     /* ── Results list ───────────────────────── */
-    .results-grid { display: flex; flex-direction: column; gap: 8px; }
-    .result-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 14px 18px;
-      cursor: pointer; transition: all 0.15s; display: flex;
-      align-items: flex-start; gap: 14px;
+    .results-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    .result-card:hover { border-color: var(--accent); background: var(--surface2); }
-    .result-card .code { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 500; color: var(--accent); min-width: 80px; }
-    .result-card .body { flex: 1; min-width: 0; }
-    .result-card .desc { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-    .result-card .sub { font-size: 12px; color: var(--text2); }
-    .result-card .meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 5px; }
-    .result-card .arrow { color: var(--muted); font-size: 16px; margin-left: auto; transition: transform 0.15s; }
-    .result-card:hover .arrow { transform: translateX(3px); color: var(--accent); }
+
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .result-card:hover {
+      border-color: var(--accent);
+      background: var(--surface2);
+    }
+
+    .result-card .code {
+      font-family: 'DM Mono', monospace;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--accent);
+      min-width: 80px;
+    }
+
+    .result-card .body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .result-card .desc {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .result-card .sub {
+      font-size: 12px;
+      color: var(--text2);
+    }
+
+    .result-card .meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 5px;
+    }
+
+    .result-card .arrow {
+      color: var(--muted);
+      font-size: 16px;
+      margin-left: auto;
+      transition: transform 0.15s;
+    }
+
+    .result-card:hover .arrow {
+      transform: translateX(3px);
+      color: var(--accent);
+    }
 
     /* highlight */
-    mark { background: var(--accent-dim); color: var(--accent); border-radius: 2px; padding: 0 2px; }
+    mark {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border-radius: 2px;
+      padding: 0 2px;
+    }
 
     /* ── Tabs ───────────────────────────────── */
-    .tab-row { display: flex; gap: 6px; margin-bottom: 16px; }
-    .tab-btn { padding: 6px 18px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); transition: all 0.15s; font-family: 'Syne', sans-serif; }
-    .tab-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+    .tab-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.15s;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .tab-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    /* ── Live preview (remplace la liste si correspondance exacte) ── */
+    .preview-hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .preview-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+
+    .preview-code-big {
+      font-family: 'DM Mono', monospace;
+      font-size: 30px;
+      font-weight: 500;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .preview-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .preview-desc-main {
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .preview-hint {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .preview-hint kbd {
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 3px;
+      padding: 1px 6px;
+      font-size: 10px;
+      color: var(--text2);
+    }
+
+    .preview-panel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .preview-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .preview-panel-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .preview-panel-error .preview-panel-header {
+      border-left: 3px solid var(--warn);
+    }
+
+    .preview-panel-resolution .preview-panel-header {
+      border-left: 3px solid var(--ok);
+    }
+
+    .preview-panel-body {
+      padding: 16px;
+    }
+
+    .preview-info-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .preview-info-row:last-child {
+      border-bottom: none;
+    }
+
+    .preview-info-row .lbl {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .preview-info-row .val {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .preview-info-row .val.missing {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .preview-rule-banner {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      background: rgba(232, 162, 71, 0.08);
+      border: 1px solid rgba(232, 162, 71, 0.35);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      margin-bottom: 14px;
+    }
+
+    .preview-rule-banner .lbl {
+      font-size: 10px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--warn);
+      font-family: 'DM Mono', monospace;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .preview-rule-banner .txt {
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 768px) {
+      .preview-panel-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
     /* ── Nav ────────────────────────────────── */
-    [data-page="search"] .nav-item[href="search.html"] { color: var(--accent) !important; background: var(--accent-dim) !important; }
+    [data-page="search"] .nav-item[href="search.html"] {
+      color: var(--accent) !important;
+      background: var(--accent-dim) !important;
+    }
 
-    @media (max-width: 768px) { .hamburger { display: block; } }
+    @media (max-width: 768px) {
+      .hamburger {
+        display: block;
+      }
+    }
   </style>
 </head>
+
 <body data-page="search">
 
-<div class="app-shell">
-  <header class="app-header">
-    <button class="hamburger" onclick="toggleSidebar()">☰</button>
-    <div class="header-brand" onclick="window.location.href='index.html'" style="cursor:pointer;" title="Accueil">
-      
-      <span>OUIDROP</span>
-    </div>
-    <div class="header-right">
-        <button class="btn btn-ghost btn-sm" onclick="window.location.href='search.html'" title="Recherche rapide">⌕</button>
-<button class="btn btn-ghost btn-sm" onclick="logout()">⏻</button>
-    </div>
-  </header>
+  <div class="app-shell">
+    <header class="app-header">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="header-brand" onclick="window.location.href='index.html'" style="cursor:pointer;" title="Accueil">
+        <span>OUIDROP</span>
+      </div>
+      <div class="header-right">
+        <button class="btn btn-ghost btn-sm" onclick="logout()">⏻</button>
+      </div>
+    </header>
 
-  <aside class="app-sidebar" id="sidebar">
-    <div class="nav-section">
-      <div class="nav-section-title">Navigation</div>
-      <a class="nav-item" href="index.html"><span class="icon">⌂</span> Tableau de bord</a>
-      <a class="nav-item nav-item active" href="search.html"><span class="icon">⌕</span> Recherche erreurs</a>
-      <a class="nav-item" href="table-automate.html"><span class="icon">⊞</span> Table Automate</a>
-      <a class="nav-item" href="table-lexium.html"><span class="icon">⊟</span> Table Lexium</a>
-    </div>
-    <div class="nav-section">
-      <div class="nav-section-title">Outils</div>
-      <a class="nav-item" href="notes.html"><span class="icon">✎</span> Notes de ticket</a>
-      <a class="nav-item" href="stats.html"><span class="icon">◈</span> Statistiques</a>
-    </div>
-    <div class="nav-section">
-      <button class="nav-item" onclick="logout()"><span class="icon">⏻</span> Déconnexion</button>
-    </div>
-  </aside>
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <aside class="app-sidebar" id="sidebar">
+      <div class="nav-section">
+        <div class="nav-section-title">Navigation</div>
+        <a class="nav-item" href="index.html"><span class="icon">⌂</span> Tableau de bord</a>
+        <a class="nav-item nav-item active" href="search.html"><span class="icon">⌕</span> Recherche erreurs</a>
+        <a class="nav-item" href="table-automate.html"><span class="icon">⊞</span> Table Automate</a>
+        <a class="nav-item" href="table-lexium.html"><span class="icon">⊟</span> Table Lexium</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Outils</div>
+        <a class="nav-item" href="notes.html"><span class="icon">✎</span> Notes de ticket</a>
+        <a class="nav-item" href="stats.html"><span class="icon">◈</span> Statistiques</a>
+      </div>
+      <div class="nav-section">
+        <button class="nav-item" onclick="logout()"><span class="icon">⏻</span> Déconnexion</button>
+      </div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-  <main class="app-main">
-    <h2 style="margin-bottom:16px;">Recherche de codes erreur</h2>
+    <main class="app-main">
+      <h2 style="margin-bottom:16px;">Recherche de codes erreur</h2>
 
-    <div class="search-top">
-      <div class="search-wrap">
-        <span class="search-icon">⌕</span>
-        <input class="search-input" id="searchInput" type="text"
-          placeholder="Code, description, emplacement…" autocomplete="off"
-          oninput="runSearch()">
-        <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+      <div class="search-top">
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input class="search-input" id="searchInput" type="text" placeholder="Code, description, emplacement…"
+            autocomplete="off" autofocus oninput="runSearch()" onkeydown="onSearchKey(event)">
+          <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+        </div>
+      </div>
+
+      <div class="tab-row" id="tabRow">
+        <button class="tab-btn active" data-tab="all" onclick="setTab(this,'all')">Toutes</button>
+        <button class="tab-btn" data-tab="automate" onclick="setTab(this,'automate')">Automate</button>
+        <button class="tab-btn" data-tab="lexium" onclick="setTab(this,'lexium')">Lexium</button>
+      </div>
+
+      <div class="filter-bar" id="filterBar" style="display:none;">
+        <label class="label">Filtres :</label>
+        <select class="filter-select" id="filterEmplacement" onchange="runSearch()">
+          <option value="">Tous les emplacements</option>
+        </select>
+        <select class="filter-select" id="filterClasse" onchange="runSearch()" style="display:none;">
+          <option value="">Toutes les classes</option>
+          <option value="0">Classe 0 — Info</option>
+          <option value="1">Classe 1 — Avertissement</option>
+          <option value="2">Classe 2 — Récupérable</option>
+          <option value="3">Classe 3 — Grave</option>
+          <option value="4">Classe 4 — Fatale</option>
+        </select>
+        <select class="filter-select" id="filterDoc" onchange="runSearch()">
+          <option value="">Tous</option>
+          <option value="documented">Documentés uniquement</option>
+          <option value="missing">Non documentés</option>
+        </select>
+        <span class="result-count" id="resultCount"></span>
+      </div>
+
+      <!-- Aperçu dynamique (remplace la liste si correspondance exacte unique) -->
+      <div id="previewContainer" style="display:none;"></div>
+
+      <div class="results-grid" id="resultsGrid">
+        <div class="empty-state" style="padding:60px 0;">
+          <div class="empty-icon">⌕</div>
+          <p>Tapez un code erreur ou un mot-clé pour commencer</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="core.js"></script>
+  <script>
+    if (!requireAuth()) throw new Error('Not authenticated');
+
+    let db = null;
+    let currentTab = 'all';
+    let currentResults = [];   // résultats de la dernière recherche (pour Entrée)
+    let previewRec = null;     // enregistrement actuellement en aperçu plein-écran
+
+    (async function init() {
+      try { db = await getDB(); }
+      catch (e) { db = getSampleData(); toast('Mode démo', 'warn'); }
+      populateFilters();
+
+      // Si query dans URL (depuis dashboard)
+      const q = new URLSearchParams(window.location.search).get('q');
+      if (q) {
+        document.getElementById('searchInput').value = q;
+        runSearch();
+      }
+
+      // Auto-focus sur le champ de recherche pour gagner du temps
+      const input = document.getElementById('searchInput');
+      input.focus();
+      input.select();
+    })();
+
+    function populateFilters() {
+      const sel = document.getElementById('filterEmplacement');
+      const emplacements = [...new Set((db.automate || []).map(r => r.emplacement).filter(Boolean))].sort();
+      emplacements.forEach(e => {
+        const o = document.createElement('option'); o.value = e; o.textContent = e;
+        sel.appendChild(o);
+      });
+    }
+
+    function setTab(btn, tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      // Show/hide appropriate filters
+      document.getElementById('filterEmplacement').style.display = (tab === 'lexium') ? 'none' : '';
+      document.getElementById('filterClasse').style.display = (tab === 'automate') ? 'none' : '';
+      runSearch();
+    }
+
+    function runSearch() {
+      const q = document.getElementById('searchInput').value.trim();
+      const emp = document.getElementById('filterEmplacement').value;
+      const cls = document.getElementById('filterClasse').value;
+      const doc = document.getElementById('filterDoc').value;
+      const clear = document.getElementById('searchClear');
+      const fbar = document.getElementById('filterBar');
+
+      clear.style.display = q ? 'block' : 'none';
+      fbar.style.display = 'flex';
+
+      let results = [];
+
+      if (currentTab !== 'lexium') {
+        let rows = db?.automate || [];
+        if (q) rows = rows.filter(r => fuzzyMatch(q, r.code) || fuzzyMatch(q, r.description) || fuzzyMatch(q, r.emplacement) || fuzzyMatch(q, r.causes));
+        if (emp) rows = rows.filter(r => r.emplacement === emp);
+        if (doc === 'documented') rows = rows.filter(r => !isMissing(r.mesures));
+        if (doc === 'missing') rows = rows.filter(r => isMissing(r.mesures));
+        results.push(...rows.map(r => ({ ...r, _source: 'automate' })));
+      }
+
+      if (currentTab !== 'automate') {
+        let rows = db?.lexium || [];
+        if (q) rows = rows.filter(r => fuzzyMatch(q, r.codeDec) || fuzzyMatch(q, r.codeHex) || fuzzyMatch(q, r.description) || fuzzyMatch(q, r.cause));
+        if (cls) rows = rows.filter(r => String(r.classe) === cls);
+        if (doc === 'documented') rows = rows.filter(r => !isMissing(r.mesures));
+        if (doc === 'missing') rows = rows.filter(r => isMissing(r.mesures));
+        results.push(...rows.map(r => ({ ...r, _source: 'lexium' })));
+      }
+
+      currentResults = results;
+      document.getElementById('resultCount').textContent = `${results.length} résultat${results.length > 1 ? 's' : ''}`;
+
+      // ── Correspondance exacte unique → bascule en aperçu plein-écran ──
+      const exact = q ? results.filter(r => {
+        const code = r._source === 'lexium' ? r.codeDec : r.code;
+        return normalize(code) === normalize(q);
+      }) : [];
+
+      if (exact.length === 1) {
+        previewRec = exact[0];
+        renderPreview(previewRec);
+        showPreview(true);
+      } else {
+        previewRec = null;
+        showPreview(false);
+        renderResults(results, q);
+      }
+    }
+
+    function showPreview(show) {
+      document.getElementById('previewContainer').style.display = show ? 'block' : 'none';
+      document.getElementById('resultsGrid').style.display = show ? 'none' : 'flex';
+    }
+
+    // ── Aperçu plein-écran (même contenu que error.html, condensé) ────
+    function renderPreview(r) {
+      const isLex = r._source === 'lexium';
+      const code = isLex ? r.codeDec : r.code;
+      const desc = r.description || '—';
+
+      const meta = isLex
+        ? `<span class="badge badge-lexium">Lexium</span>
+       <span class="badge cls-badge-${r.classe || 0}">Classe ${r.classe} — ${severityLabel(r.classe)}</span>
+       <span class="badge badge-missing mono">DEC: ${r.codeDec} / HEX: ${r.codeHex || '—'}</span>`
+        : `<span class="badge badge-automate">Automate</span>
+       <span class="badge badge-missing">${r.emplacement || '—'}</span>
+       <span class="badge ${!isMissing(r.mesures) ? 'badge-ok' : 'badge-missing'}">${!isMissing(r.mesures) ? '✓ Résolution documentée' : '⊘ Non documenté'}</span>`;
+
+      const errInfo = isLex
+        ? prevRow('Code décimal', r.codeDec)
+        + prevRow('Code hexadécimal', r.codeHex)
+        + prevRow('Classe d\'erreur', `Classe ${r.classe} — ${severityLabel(r.classe)}`)
+        + prevRow('Description', r.description)
+        + prevRow('Cause connue', isMissing(r.cause) ? null : r.cause)
+        : prevRow('Code erreur', r.code)
+        + prevRow('Emplacement', r.emplacement)
+        + prevRow('Description', r.description)
+        + prevRow('Cause connue', isMissing(r.causes) ? null : r.causes);
+
+      const rawMes = r.mesures;
+      const rawRegle = isLex ? null : r.regle;
+      const regleHtml = (rawRegle && !isMissing(rawRegle))
+        ? `<div class="preview-rule-banner">
+         <span style="color:var(--warn);font-size:15px;">⚠</span>
+         <div><div class="lbl">Règle à respecter avant dépannage</div><div class="txt">${rawRegle}</div></div>
+       </div>`
+        : '';
+
+      let resHtml;
+      if (isMissing(rawMes)) {
+        resHtml = regleHtml + `<div class="empty-state" style="padding:16px 0;">
+      <div class="empty-icon">⊘</div>
+      <p>Aucune méthode de résolution documentée.</p>
+    </div>`;
+      } else {
+        const steps = parseSteps(rawMes);
+        if (steps.length > 1) {
+          resHtml = regleHtml + `<ol class="steps-list" style="list-style:none;display:flex;flex-direction:column;gap:8px;">${steps.map((s, i) =>
+            `<li style="display:flex;gap:10px;"><span style="width:20px;height:20px;min-width:20px;background:var(--accent-dim);border:1px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);">${i + 1}</span><span style="font-size:13px;color:var(--text2);line-height:1.5;">${s}</span></li>`
+          ).join('')}</ol>`;
+        } else {
+          resHtml = regleHtml + `<div style="font-size:13px;color:var(--text2);line-height:1.6;">${rawMes.replace(/\n/g, '<br>')}</div>`;
+        }
+      }
+
+      document.getElementById('previewContainer').innerHTML = `
+    <div class="preview-hero">
+      <div class="preview-code-big">${code}</div>
+      <div class="preview-meta">${meta}</div>
+      <div class="preview-desc-main">${desc}</div>
+      <div class="preview-hint"><kbd>↵ Entrée</kbd> ouvrir la fiche complète &nbsp;·&nbsp; <kbd>Échap</kbd> revenir à la liste</div>
+    </div>
+    <div class="preview-panel-grid">
+      <div class="preview-panel preview-panel-error">
+        <div class="preview-panel-header">⚠ Informations sur l'erreur</div>
+        <div class="preview-panel-body">${errInfo}</div>
+      </div>
+      <div class="preview-panel preview-panel-resolution">
+        <div class="preview-panel-header">🔧 Méthode de résolution</div>
+        <div class="preview-panel-body">${resHtml}</div>
       </div>
     </div>
+  `;
+    }
 
-    <div class="tab-row">
-      <button class="tab-btn active" data-tab="all" onclick="setTab(this,'all')">Toutes</button>
-      <button class="tab-btn" data-tab="automate" onclick="setTab(this,'automate')">Automate</button>
-      <button class="tab-btn" data-tab="lexium" onclick="setTab(this,'lexium')">Lexium</button>
-    </div>
+    function prevRow(label, val) {
+      const missing = val === null || val === undefined || isMissing(String(val));
+      return `<div class="preview-info-row">
+    <span class="lbl">${label}</span>
+    <span class="val ${missing ? 'missing' : ''}">${missing ? 'Non renseigné' : val}</span>
+  </div>`;
+    }
 
-    <div class="filter-bar" id="filterBar" style="display:none;">
-      <label class="label">Filtres :</label>
-      <select class="filter-select" id="filterEmplacement" onchange="runSearch()">
-        <option value="">Tous les emplacements</option>
-      </select>
-      <select class="filter-select" id="filterClasse" onchange="runSearch()" style="display:none;">
-        <option value="">Toutes les classes</option>
-        <option value="0">Classe 0 — Info</option>
-        <option value="1">Classe 1 — Avertissement</option>
-        <option value="2">Classe 2 — Récupérable</option>
-        <option value="3">Classe 3 — Grave</option>
-        <option value="4">Classe 4 — Fatale</option>
-      </select>
-      <select class="filter-select" id="filterDoc" onchange="runSearch()">
-        <option value="">Tous</option>
-        <option value="documented">Documentés uniquement</option>
-        <option value="missing">Non documentés</option>
-      </select>
-      <span class="result-count" id="resultCount"></span>
-    </div>
+    function parseSteps(text) {
+      if (!text) return [];
+      const byNum = text.split(/\n?\d+[\.\)]\s+/).filter(s => s.trim());
+      if (byNum.length > 1) return byNum;
+      const bySemi = text.split(/;\s*/).filter(s => s.trim());
+      if (bySemi.length > 1) return bySemi;
+      const byNewline = text.split(/\n/).filter(s => s.trim());
+      if (byNewline.length > 1) return byNewline;
+      return [text];
+    }
 
-    <div class="results-grid" id="resultsGrid">
-      <div class="empty-state" style="padding:60px 0;">
-        <div class="empty-icon">⌕</div>
-        <p>Tapez un code erreur ou un mot-clé pour commencer</p>
-      </div>
-    </div>
-  </main>
-</div>
-
-<script src="core.js"></script>
-<script>
-if (!requireAuth()) throw new Error('Not authenticated');
-
-let db = null;
-let currentTab = 'all';
-
-(async function init() {
-  try { db = await getDB(); }
-  catch(e) { db = getSampleData(); toast('Mode démo', 'warn'); }
-  populateFilters();
-
-  // Si query dans URL (depuis dashboard)
-  const q = new URLSearchParams(window.location.search).get('q');
-  if (q) {
-    document.getElementById('searchInput').value = q;
-    runSearch();
-  }
-})();
-
-function populateFilters() {
-  const sel = document.getElementById('filterEmplacement');
-  const emplacements = [...new Set((db.automate||[]).map(r => r.emplacement).filter(Boolean))].sort();
-  emplacements.forEach(e => {
-    const o = document.createElement('option'); o.value = e; o.textContent = e;
-    sel.appendChild(o);
-  });
-}
-
-function setTab(btn, tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  // Show/hide appropriate filters
-  document.getElementById('filterEmplacement').style.display = (tab === 'lexium') ? 'none' : '';
-  document.getElementById('filterClasse').style.display = (tab === 'automate') ? 'none' : '';
-  runSearch();
-}
-
-function runSearch() {
-  const q     = document.getElementById('searchInput').value.trim();
-  const emp   = document.getElementById('filterEmplacement').value;
-  const cls   = document.getElementById('filterClasse').value;
-  const doc   = document.getElementById('filterDoc').value;
-  const clear = document.getElementById('searchClear');
-  const fbar  = document.getElementById('filterBar');
-
-  clear.style.display = q ? 'block' : 'none';
-  fbar.style.display  = 'flex';
-
-  let results = [];
-
-  if (currentTab !== 'lexium') {
-    let rows = db?.automate || [];
-    if (q) rows = rows.filter(r => fuzzyMatch(q, r.code) || fuzzyMatch(q, r.description) || fuzzyMatch(q, r.emplacement) || fuzzyMatch(q, r.causes));
-    if (emp) rows = rows.filter(r => r.emplacement === emp);
-    if (doc === 'documented') rows = rows.filter(r => !isMissing(r.mesures));
-    if (doc === 'missing')    rows = rows.filter(r => isMissing(r.mesures));
-    results.push(...rows.map(r => ({ ...r, _source: 'automate' })));
-  }
-
-  if (currentTab !== 'automate') {
-    let rows = db?.lexium || [];
-    if (q) rows = rows.filter(r => fuzzyMatch(q, r.codeDec) || fuzzyMatch(q, r.codeHex) || fuzzyMatch(q, r.description) || fuzzyMatch(q, r.cause));
-    if (cls) rows = rows.filter(r => String(r.classe) === cls);
-    if (doc === 'documented') rows = rows.filter(r => !isMissing(r.mesures));
-    if (doc === 'missing')    rows = rows.filter(r => isMissing(r.mesures));
-    results.push(...rows.map(r => ({ ...r, _source: 'lexium' })));
-  }
-
-  document.getElementById('resultCount').textContent = `${results.length} résultat${results.length > 1 ? 's' : ''}`;
-  renderResults(results, q);
-}
-
-function renderResults(results, q) {
-  const grid = document.getElementById('resultsGrid');
-  if (!results.length) {
-    grid.innerHTML = `<div class="empty-state" style="padding:60px 0;">
+    function renderResults(results, q) {
+      const grid = document.getElementById('resultsGrid');
+      if (!results.length) {
+        grid.innerHTML = `<div class="empty-state" style="padding:60px 0;">
       <div class="empty-icon">⊘</div>
       <p>Aucun résultat${q ? ` pour "${q}"` : ''}</p>
     </div>`;
-    return;
-  }
+        return;
+      }
 
-  grid.innerHTML = results.map(r => {
-    const isLex = r._source === 'lexium';
-    const code  = isLex ? r.codeDec : r.code;
-    const desc  = highlight(r.description || '—', q);
-    const sub   = isLex
-      ? `Cause : ${highlight(isMissing(r.cause) ? 'Non renseignée' : r.cause, q)}`
-      : `Emplacement : <strong>${highlight(r.emplacement || '—', q)}</strong>`;
-    const hasMes = !isMissing(r.mesures);
+      grid.innerHTML = results.map(r => {
+        const isLex = r._source === 'lexium';
+        const code = isLex ? r.codeDec : r.code;
+        const desc = highlight(r.description || '—', q);
+        const sub = isLex
+          ? `Cause : ${highlight(isMissing(r.cause) ? 'Non renseignée' : r.cause, q)}`
+          : `Emplacement : <strong>${highlight(r.emplacement || '—', q)}</strong>`;
+        const hasMes = !isMissing(r.mesures);
 
-    const badges = isLex
-      ? `<span class="badge badge-lexium">Lexium</span>
+        const badges = isLex
+          ? `<span class="badge badge-lexium">Lexium</span>
          <span class="badge cls-badge-${r.classe}">Classe ${r.classe}</span>
          <span class="badge ${hasMes ? 'badge-ok' : 'badge-missing'}">${hasMes ? '✓ Documenté' : '⊘ Non documenté'}</span>`
-      : `<span class="badge badge-automate">Automate</span>
+          : `<span class="badge badge-automate">Automate</span>
          <span class="badge badge-missing">${r.emplacement || '—'}</span>
          <span class="badge ${hasMes ? 'badge-ok' : 'badge-missing'}">${hasMes ? '✓ Documenté' : '⊘ Non documenté'}</span>`;
 
-    return `<div class="result-card" onclick="goToError('${code}','${r._source}')">
+        return `<div class="result-card" onclick="goToError('${code}','${r._source}')">
       <span class="code">${highlight(code, q)}</span>
       <div class="body">
         <div class="meta">${badges}</div>
@@ -253,35 +678,64 @@ function renderResults(results, q) {
       </div>
       <span class="arrow">›</span>
     </div>`;
-  }).join('');
-}
+      }).join('');
+    }
 
-function highlight(text, q) {
-  if (!q || !text) return text || '';
-  const words = q.trim().split(/\s+/).filter(w => w.length > 1);
-  let out = text;
-  words.forEach(w => {
-    const re = new RegExp(`(${w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
-    out = out.replace(re, '<mark>$1</mark>');
-  });
-  return out;
-}
+    function highlight(text, q) {
+      if (!q || !text) return text || '';
+      const words = q.trim().split(/\s+/).filter(w => w.length > 1);
+      let out = text;
+      words.forEach(w => {
+        const re = new RegExp(`(${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        out = out.replace(re, '<mark>$1</mark>');
+      });
+      return out;
+    }
 
-function clearSearch() {
-  document.getElementById('searchInput').value = '';
-  document.getElementById('searchClear').style.display = 'none';
-  runSearch();
-}
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('searchClear').style.display = 'none';
+      runSearch();
+      document.getElementById('searchInput').focus();
+    }
 
-function goToError(code, source) {
-  addToHistory(code, source);
-  window.location.href = `error.html?code=${code}&source=${source}`;
-}
+    // ── Navigation clavier ──────────────────────────────────
+    function onSearchKey(e) {
+      if (e.key === 'Enter') {
+        // Si un aperçu exact est affiché → on l'ouvre directement
+        if (previewRec) {
+          const code = previewRec._source === 'lexium' ? previewRec.codeDec : previewRec.code;
+          goToError(code, previewRec._source);
+          return;
+        }
+        // Sinon, ouvrir le premier résultat de la liste
+        if (currentResults.length) {
+          const r = currentResults[0];
+          const code = r._source === 'lexium' ? r.codeDec : r.code;
+          goToError(code, r._source);
+        }
+      } else if (e.key === 'Escape') {
+        if (previewRec) {
+          // Revenir à la liste sans perdre la saisie
+          previewRec = null;
+          showPreview(false);
+          renderResults(currentResults, document.getElementById('searchInput').value.trim());
+        } else {
+          clearSearch();
+        }
+      }
+    }
 
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').classList.toggle('active');
-}
-</script>
+    function goToError(code, source) {
+      addToHistory(code, source);
+      window.location.href = `error.html?code=${code}&source=${source}`;
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+  </script>
 </body>
+
 </html>

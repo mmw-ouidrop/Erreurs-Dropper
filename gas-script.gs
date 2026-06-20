@@ -18,10 +18,10 @@
 // ─── CONFIGURATION ─────────────────────────────────────────────
 const CONFIG = {
   // ID de votre Google Sheet (dans l'URL : /spreadsheets/d/SPREADSHEET_ID/edit)
-  SPREADSHEET_ID: 'VOTRE_SPREADSHEET_ID_ICI',
+  SPREADSHEET_ID: '1Hckw5t5wLrDUXP_tn0EovPvSrWuMJE3QBVF99iEfUDI',
 
   // Nom de la feuille contenant les données brutes
-  SHEET_NAME: 'Raw_Data',
+  SHEET_NAME: 'Raw Data',
 
   // ── Structure de la feuille Raw_Data ──────────────────────────
   // Les deux tables sont côte à côte.
@@ -35,12 +35,13 @@ const CONFIG = {
       emplacement:1,  // B
       description:2,  // C
       causes:     3,  // D
-      mesures:    4,  // E
+      regle:      4,  // F — Règle à respecter avant dépannage
+      mesures:    5,  // E
     }
   },
 
   LEXIUM: {
-    START_COL: 6,   // Colonne G (avec une colonne vide F séparatrice)
+    START_COL: 7,   // Colonne H (avec une colonne vide G séparatrice)
     HEADER_ROW: 1,
     DATA_ROW:   2,
     COLS: {
@@ -134,6 +135,7 @@ function parseAutomate(allData) {
       description: String(row[cfg.START_COL + cfg.COLS.description] || '').trim(),
       causes:      String(row[cfg.START_COL + cfg.COLS.causes]      || '').trim(),
       mesures:     String(row[cfg.START_COL + cfg.COLS.mesures]     || '').trim(),
+      regle:       String(row[cfg.START_COL + cfg.COLS.regle]       || '').trim(),
     });
   }
 

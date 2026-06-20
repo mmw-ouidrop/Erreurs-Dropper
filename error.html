@@ -19,6 +19,20 @@
       font-size: 18px;
     }
 
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      color: var(--bg);
+      clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%);
+      flex-shrink: 0;
+    }
+
     .header-right {
       display: flex;
       align-items: center;
@@ -192,6 +206,41 @@
     .info-row .val.missing {
       color: var(--muted);
       font-style: italic;
+    }
+
+    /* Rule banner */
+    .rule-banner {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: rgba(232, 162, 71, 0.08);
+      border: 1px solid rgba(232, 162, 71, 0.35);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+
+    .rule-icon {
+      font-size: 16px;
+      color: var(--warn);
+      margin-top: 1px;
+    }
+
+    .rule-label {
+      font-size: 10px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--warn);
+      font-family: 'DM Mono', monospace;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .rule-text {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5;
+      font-weight: 600;
     }
 
     /* Steps */
@@ -449,8 +498,19 @@
       // Right panel — resolution
       const resBody = document.getElementById('resolutionBody');
       const rawMes = source === 'lexium' ? rec.mesures : rec.mesures;
+      const rawRegle = source === 'lexium' ? null : rec.regle;
+      const regleHtml = (rawRegle && !isMissing(rawRegle))
+        ? `<div class="rule-banner">
+         <span class="rule-icon">⚠</span>
+         <div>
+           <div class="rule-label">Règle à respecter avant dépannage</div>
+           <div class="rule-text">${rawRegle}</div>
+         </div>
+       </div>`
+        : '';
+
       if (isMissing(rawMes)) {
-        resBody.innerHTML = `<div class="empty-state" style="padding:24px 0;">
+        resBody.innerHTML = regleHtml + `<div class="empty-state" style="padding:24px 0;">
       <div class="empty-icon">⊘</div>
       <p>Aucune méthode de résolution documentée.<br>Vous pouvez ajouter une note ci-dessous.</p>
     </div>`;
@@ -459,11 +519,11 @@
         // Parser les étapes numérotées si présentes
         const steps = parseSteps(rawMes);
         if (steps.length > 1) {
-          resBody.innerHTML = `<ol class="steps-list">${steps.map((s, i) =>
+          resBody.innerHTML = regleHtml + `<ol class="steps-list">${steps.map((s, i) =>
             `<li class="step-item"><span class="step-num">${i + 1}</span><span class="step-text">${s}</span></li>`
           ).join('')}</ol>`;
         } else {
-          resBody.innerHTML = `<div style="font-size:13px;color:var(--text2);line-height:1.6;">${rawMes.replace(/\n/g, '<br>')}</div>`;
+          resBody.innerHTML = regleHtml + `<div style="font-size:13px;color:var(--text2);line-height:1.6;">${rawMes.replace(/\n/g, '<br>')}</div>`;
         }
       }
     }
@@ -520,19 +580,19 @@
       toast('Note effacée', 'info');
     }
 
-    function copyErrorInfo() {
-      if (!rec) return;
-      const code = source === 'lexium' ? rec.codeDec : rec.code;
-      const emp = source === 'lexium' ? '—' : (rec.emplacement || '—');
-      const desc = rec.description || '—';
-      const text = `Code erreur → ${code}\nEmplacement → ${emp}\nDescription → ${desc}`;
-      copyToClipboard(text);
-    }
-
     function copyNote() {
       const t = document.getElementById('noteArea').value.trim();
       if (!t) { toast('Note vide', 'warn'); return; }
       copyToClipboard(t);
+    }
+
+    function copyErrorInfo() {
+      if (!rec) { toast('Aucune donnée à copier', 'warn'); return; }
+      const c = source === 'lexium' ? rec.codeDec : rec.code;
+      const emp = source === 'lexium' ? '—' : (rec.emplacement || '—');
+      const desc = rec.description || '—';
+      const text = `Code erreur → ${c}\nEmplacement → ${emp}\nDescription → ${desc}`;
+      copyToClipboard(text);
     }
 
     function copyResolution() {
