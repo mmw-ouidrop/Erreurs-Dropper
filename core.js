@@ -15,7 +15,7 @@ const OD = {
   // Cache BDD
   CACHE_KEY: 'od_db_cache',
   CACHE_TS_KEY: 'od_db_ts',
-  CACHE_TTL: 1000 * 60 * 60 * 24,  // 24h
+  CACHE_TTL: 1000 * 60 * 60 * 24 * 7,  // 7 jours
 
   // Local user data
   HISTORY_KEY: 'od_history',

@@ -10,10 +10,10 @@
     href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-<link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
-<link rel="manifest" href="./favicon/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
+  <link rel="manifest" href="./favicon/site.webmanifest">
   <style>
     .header-brand {
       display: flex;
@@ -99,7 +99,7 @@
       font-family: 'DM Mono', monospace;
       font-size: 32px;
       font-weight: 500;
-      color: var(--accent);
+      color: var(--red-signal);
       line-height: 1;
       margin-bottom: 6px;
     }
@@ -157,11 +157,13 @@
     /* Error panel (left) */
     .panel-error .panel-header {
       border-left: 3px solid var(--warn);
+      background-color: var(--warn);
     }
 
     /* Resolution panel (right) */
     .panel-resolution .panel-header {
       border-left: 3px solid var(--ok);
+      background-color: var(--ok);
     }
 
     .info-row {
@@ -315,8 +317,8 @@
         <span>OUIDROP</span>
       </div>
       <div class="header-right">
-        <button class="btn btn-ghost btn-sm" onclick="window.location.href='search.html'"
-          title="Recherche rapide">⌕</button>
+        <button class="btn btn-ghost btn-sm" onclick="window.location.href='search.html'" title="Recherche rapide"><img
+            src="./assets/icons/search.png"></button>
         <button class="btn btn-ghost btn-sm" onclick="logout()">⏻</button>
       </div>
     </header>
@@ -324,15 +326,21 @@
     <aside class="app-sidebar" id="sidebar">
       <div class="nav-section">
         <div class="nav-section-title">Navigation</div>
-        <a class="nav-item" href="index.html"><span class="icon">⌂</span> Tableau de bord</a>
-        <a class="nav-item" href="search.html"><span class="icon">⌕</span> Recherche erreurs</a>
-        <a class="nav-item" href="table-automate.html"><span class="icon">⊞</span> Table Automate</a>
-        <a class="nav-item" href="table-lexium.html"><span class="icon">⊟</span> Table Lexium</a>
+        <a class="nav-item" href="index.html"><span class="icon"><img src="./assets/icons/home.png"></span> Tableau de
+          bord</a>
+        <a class="nav-item" href="search.html"><span class="icon"><img src="./assets/icons/search.png"></span> Recherche
+          erreurs</a>
+        <a class="nav-item" href="table-automate.html"><span class="icon"><img src="./assets/icons/automate.png"></span>
+          Table Automate</a>
+        <a class="nav-item" href="table-lexium.html"><span class="icon"><img src="./assets/icons/schneider.png"></span>
+          Table Lexium</a>
       </div>
       <div class="nav-section">
         <div class="nav-section-title">Outils</div>
-        <a class="nav-item" href="notes.html"><span class="icon">✎</span> Notes de ticket</a>
-        <a class="nav-item" href="stats.html"><span class="icon">◈</span> Statistiques</a>
+        <a class="nav-item" href="notes.html"><span class="icon"><img src="./assets/icons/edit.png"></span> Notes de
+          ticket</a>
+        <a class="nav-item" href="stats.html"><span class="icon"><img src="./assets/icons/stats.png"></span>
+          Statistiques</a>
       </div>
       <div class="nav-section">
         <button class="nav-item" onclick="logout()"><span class="icon">⏻</span> Déconnexion</button>
@@ -360,7 +368,7 @@
           <div class="panel-header">
             <span class="panel-icon">⚠</span>
             <span class="panel-title">Informations sur l'erreur</span>
-            <button class="btn btn-ghost btn-sm" style="margin-left:auto;" onclick="copyErrorInfo()">⧉ Copier</button>
+            <button class="btn btn-ghost btn-sm btn-copy" style="margin-left:auto;" onclick="copyErrorInfo()">⧉ Copier</button>
           </div>
           <div class="panel-body" id="errorBody">
             <div class="empty-state">
@@ -374,7 +382,7 @@
           <div class="panel-header">
             <span class="panel-icon">🔧</span>
             <span class="panel-title">Méthode de résolution</span>
-            <button class="btn btn-ghost btn-sm" style="margin-left:auto;" id="copyResBtn" onclick="copyResolution()">⧉
+            <button class="btn btn-ghost btn-sm btn-copy" style="margin-left:auto;" id="copyResBtn" onclick="copyResolution()">⧉
               Copier</button>
           </div>
           <div class="panel-body" id="resolutionBody">

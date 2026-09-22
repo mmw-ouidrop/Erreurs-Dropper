@@ -10,10 +10,10 @@
     href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-<link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
-<link rel="manifest" href="./favicon/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
+  <link rel="manifest" href="./favicon/site.webmanifest">
   <style>
     .header-brand {
       display: flex;
@@ -204,7 +204,7 @@
       font-family: 'DM Mono', monospace;
       font-size: 30px;
       font-weight: 500;
-      color: var(--accent);
+      color: var(--red-signal);
       line-height: 1;
       margin-bottom: 6px;
     }
@@ -269,10 +269,12 @@
 
     .preview-panel-error .preview-panel-header {
       border-left: 3px solid var(--warn);
+      background-color: var(--warn);
     }
 
     .preview-panel-resolution .preview-panel-header {
       border-left: 3px solid var(--ok);
+      background-color: var(--ok);
     }
 
     .preview-panel-body {
@@ -374,15 +376,21 @@
     <aside class="app-sidebar" id="sidebar">
       <div class="nav-section">
         <div class="nav-section-title">Navigation</div>
-        <a class="nav-item" href="index.html"><span class="icon">⌂</span> Tableau de bord</a>
-        <a class="nav-item nav-item active" href="search.html"><span class="icon">⌕</span> Recherche erreurs</a>
-        <a class="nav-item" href="table-automate.html"><span class="icon">⊞</span> Table Automate</a>
-        <a class="nav-item" href="table-lexium.html"><span class="icon">⊟</span> Table Lexium</a>
+        <a class="nav-item" href="index.html"><span class="icon"><img src="./assets/icons/home.png"></span> Tableau de
+          bord</a>
+        <a class="nav-item nav-item active" href="search.html"><span class="icon"><img
+              src="./assets/icons/search.png"></span> Recherche erreurs</a>
+        <a class="nav-item" href="table-automate.html"><span class="icon"><img src="./assets/icons/automate.png"></span>
+          Table Automate</a>
+        <a class="nav-item" href="table-lexium.html"><span class="icon"><img src="./assets/icons/schneider.png"></span>
+          Table Lexium</a>
       </div>
       <div class="nav-section">
         <div class="nav-section-title">Outils</div>
-        <a class="nav-item" href="notes.html"><span class="icon">✎</span> Notes de ticket</a>
-        <a class="nav-item" href="stats.html"><span class="icon">◈</span> Statistiques</a>
+        <a class="nav-item" href="notes.html"><span class="icon"><img src="./assets/icons/edit.png"></span> Notes de
+          ticket</a>
+        <a class="nav-item" href="stats.html"><span class="icon"><img src="./assets/icons/stats.png"></span>
+          Statistiques</a>
       </div>
       <div class="nav-section">
         <button class="nav-item" onclick="logout()"><span class="icon">⏻</span> Déconnexion</button>
@@ -395,7 +403,7 @@
 
       <div class="search-top">
         <div class="search-wrap">
-          <span class="search-icon">⌕</span>
+          <span class="search-icon"><img src="./assets/icons/search.png"></span>
           <input class="search-input" id="searchInput" type="text" placeholder="Code, description, emplacement…"
             autocomplete="off" autofocus oninput="runSearch()" onkeydown="onSearchKey(event)">
           <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
@@ -434,7 +442,7 @@
 
       <div class="results-grid" id="resultsGrid">
         <div class="empty-state" style="padding:60px 0;">
-          <div class="empty-icon">⌕</div>
+          <div class="empty-icon"><img src="./assets/icons/search.png"></div>
           <p>Tapez un code erreur ou un mot-clé pour commencer</p>
         </div>
       </div>
