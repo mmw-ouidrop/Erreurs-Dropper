@@ -1,6 +1,6 @@
 {
-  "name": "OUIDROP — Codes Erreur",
-  "short_name": "OUIDROP",
+  "name": "Codes Erreur Dropper",
+  "short_name": "Erreurs Dropper",
   "description": "Recherche de codes erreur pour automates et variateurs Lexium",
   "start_url": "./index.html",
   "display": "standalone",
