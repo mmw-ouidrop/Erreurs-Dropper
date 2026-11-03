@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OUIDROP — Recherche</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #0D2E5B;
+      color: #E5EAF5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+    }
+
+    .widget-container {
+      width: 100%;
+      max-width: 380px;
+      background: #112d5e;
+      border-radius: 16px;
+      border: 1px solid #1e3d72;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    /* ── Header ── */
+    .widget-header {
+      background: #0D2E5B;
+      border-bottom: 2px solid #3B82F6;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .widget-logo {
+      width: 24px;
+      height: 24px;
+    }
+    .widget-title {
+      font-family: 'Arial Narrow', Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #E5EAF5;
+    }
+    .widget-title span {
+      color: #3B82F6;
+    }
+
+    /* ── Search ── */
+    .widget-search-area {
+      padding: 12px;
+    }
+    .search-row {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      font-size: 14px;
+      color: #5a7aaa;
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      background: #0a2550;
+      border: 1px solid #1e3d72;
+      border-radius: 8px;
+      color: #E5EAF5;
+      font-size: 14px;
+      padding: 10px 40px 10px 36px;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .search-input::placeholder { color: #5a7aaa; }
+    .search-input:focus {
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+    }
+    .search-clear {
+      position: absolute;
+      right: 8px;
+      background: none;
+      border: none;
+      color: #5a7aaa;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 4px;
+      display: none;
+    }
+
+    /* ── Résultats ── */
+    .results-area {
+      padding: 0 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .result-item {
+      background: #0a2550;
+      border: 1px solid #1e3d72;
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.15s;
+    }
+    .result-item:hover {
+      border-color: #3B82F6;
+      background: #163566;
+    }
+    .result-code {
+      font-family: monospace;
+      font-size: 13px;
+      font-weight: 600;
+      color: #3B82F6;
+      min-width: 60px;
+      white-space: nowrap;
+    }
+    .result-body { flex: 1; min-width: 0; }
+    .result-desc {
+      font-size: 12px;
+      color: #E5EAF5;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .result-src {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 10px;
+      padding: 2px 6px;
+      white-space: nowrap;
+    }
+    .result-src.automate { background: rgba(59,130,246,0.15); color: #3B82F6; }
+    .result-src.lexium   { background: rgba(30,58,138,0.4); color: #93c5fd; }
+
+    .empty-msg {
+      text-align: center;
+      padding: 20px;
+      color: #5a7aaa;
+      font-size: 12px;
+    }
+
+    .hint-msg {
+      text-align: center;
+      padding: 16px;
+      color: #5a7aaa;
+      font-size: 11px;
+    }
+    .hint-msg .hint-icon { font-size: 24px; margin-bottom: 8px; }
+
+    /* ── Footer ── */
+    .widget-footer {
+      padding: 8px 12px;
+      border-top: 1px solid #1e3d72;
+      display: flex;
+      gap: 6px;
+    }
+    .footer-btn {
+      flex: 1;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 6px;
+      color: #3B82F6;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 7px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-family: 'Arial Narrow', Arial, sans-serif;
+      transition: all 0.15s;
+    }
+    .footer-btn:hover { background: rgba(59,130,246,0.2); border-color: #3B82F6; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #1e3d72; border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<div class="widget-container">
+
+  <!-- Header -->
+  <div class="widget-header">
+    <svg class="widget-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="24" height="24" rx="4" fill="#0D2E5B"/>
+      <text x="12" y="17" font-family="Arial Narrow, Arial" font-weight="800" font-size="15" fill="white" text-anchor="middle" letter-spacing="1">O</text>
+      <rect x="4" y="20" width="16" height="2" rx="1" fill="#3B82F6"/>
+    </svg>
+    <div class="widget-title">OUIDROP <span>ERREURS</span></div>
+  </div>
+
+  <!-- Search -->
+  <div class="widget-search-area">
+    <div class="search-row">
+      <span class="search-icon">⌕</span>
+      <input
+        type="text"
+        class="search-input"
+        id="widgetInput"
+        placeholder="Code erreur ou mot-clé…"
+        oninput="onSearch()"
+        onkeydown="onKey(event)"
+        autocomplete="off"
+        autocorrect="off"
+        spellcheck="false"
+      >
+      <button class="search-clear" id="clearBtn" onclick="clearSearch()">✕</button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="results-area" id="resultsArea">
+    <div class="hint-msg">
+      <div class="hint-icon">⌕</div>
+      Saisissez un code erreur ou un mot-clé
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="widget-footer">
+    <a class="footer-btn" href="./search.html">Recherche avancée</a>
+    <a class="footer-btn" href="./index.html">Tableau de bord</a>
+  </div>
+
+</div>
+
+<script>
+// ── DB locale depuis localStorage ──────────────────
+const CACHE_KEY = 'od_db_cache';
+let db = null;
+
+function loadDB() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      db = parsed;
+    }
+  } catch(e) {}
+}
+
+loadDB();
+
+// ── Fuzzy match simplifié ─────────────────────────
+function normalize(s) {
+  return String(s || '').toLowerCase().replace(/\s+/g, '');
+}
+
+function fuzzyMatch(q, s) {
+  if (!q || !s) return false;
+  const nq = normalize(q);
+  const ns = normalize(s);
+  return ns.includes(nq);
+}
+
+// ── Recherche ─────────────────────────────────────
+function search(q) {
+  if (!db || !q) return [];
+  const results = [];
+
+  (db.automate || []).forEach(r => {
+    if (fuzzyMatch(q, r.code) || fuzzyMatch(q, r.description) || fuzzyMatch(q, r.emplacement)) {
+      results.push({ ...r, _source: 'automate', _code: r.code });
+    }
+  });
+
+  (db.lexium || []).forEach(r => {
+    if (fuzzyMatch(q, r.codeDec) || fuzzyMatch(q, r.codeHex) || fuzzyMatch(q, r.description)) {
+      results.push({ ...r, _source: 'lexium', _code: r.codeDec });
+    }
+  });
+
+  return results.slice(0, 8);
+}
+
+// ── Rendu ─────────────────────────────────────────
+function renderResults(results, q) {
+  const area = document.getElementById('resultsArea');
+
+  if (!q) {
+    area.innerHTML = `<div class="hint-msg"><div class="hint-icon">⌕</div>Saisissez un code erreur ou un mot-clé</div>`;
+    return;
+  }
+
+  if (!db) {
+    area.innerHTML = `<div class="empty-msg">⚠ Données non disponibles.<br>Ouvrez l'application pour synchroniser.</div>`;
+    return;
+  }
+
+  if (!results.length) {
+    area.innerHTML = `<div class="empty-msg">Aucun résultat pour « ${escHtml(q)} »</div>`;
+    return;
+  }
+
+  area.innerHTML = results.map(r => {
+    const params = new URLSearchParams({ code: r._code, source: r._source });
+    const srcCls = r._source === 'lexium' ? 'lexium' : 'automate';
+    const srcLbl = r._source === 'lexium' ? 'Lexium' : 'Automate';
+    return `<a class="result-item" href="./error.html?${params}" onclick="trackOpen('${r._code}','${r._source}')">
+      <span class="result-code">${escHtml(r._code)}</span>
+      <span class="result-body">
+        <span class="result-desc">${escHtml(r.description || '—')}</span>
+      </span>
+      <span class="result-src ${srcCls}">${srcLbl}</span>
+    </a>`;
+  }).join('');
+}
+
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Handlers ──────────────────────────────────────
+function onSearch() {
+  const q = document.getElementById('widgetInput').value.trim();
+  document.getElementById('clearBtn').style.display = q ? 'block' : 'none';
+  const results = search(q);
+  renderResults(results, q);
+}
+
+function onKey(e) {
+  if (e.key === 'Escape') clearSearch();
+  if (e.key === 'Enter') {
+    const q = document.getElementById('widgetInput').value.trim();
+    const results = search(q);
+    if (results.length) {
+      const r = results[0];
+      const params = new URLSearchParams({ code: r._code, source: r._source });
+      window.location.href = `./error.html?${params}`;
+    } else if (q) {
+      window.location.href = `./search.html?q=${encodeURIComponent(q)}`;
+    }
+  }
+}
+
+function clearSearch() {
+  document.getElementById('widgetInput').value = '';
+  document.getElementById('clearBtn').style.display = 'none';
+  renderResults([], '');
+}
+
+function trackOpen(code, source) {
+  // Ajoute à l'historique dans localStorage (même clé que l'app principale)
+  try {
+    const key = 'od_history';
+    const hist = JSON.parse(localStorage.getItem(key) || '[]');
+    hist.unshift({ code, source, ts: Date.now() });
+    if (hist.length > 50) hist.pop();
+    localStorage.setItem(key, JSON.stringify(hist));
+  } catch(e) {}
+}
+
+// Focus automatique sur mobile
+document.getElementById('widgetInput').focus();
+</script>
+
+</body>
+</html>

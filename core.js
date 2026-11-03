@@ -269,3 +269,34 @@ function getSampleData() {
     ]
   };
 }
+
+// ─── PWA INSTALL PROMPT ────────────────────────────────────────────────
+// Capture le beforeinstallprompt pour pouvoir le déclencher plus tard
+let _pwaInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _pwaInstallPrompt = e;
+  // Affiche le bouton d'installation si présent dans la page
+  const btn = document.getElementById('pwaInstallBtn');
+  if (btn) btn.style.display = 'inline-flex';
+});
+
+window.addEventListener('appinstalled', () => {
+  _pwaInstallPrompt = null;
+  const btn = document.getElementById('pwaInstallBtn');
+  if (btn) btn.style.display = 'none';
+  toast('Application installée avec succès !', 'success', 4000);
+});
+
+async function promptPWAInstall() {
+  if (!_pwaInstallPrompt) {
+    toast('L\'application est déjà installée ou l\'installation n\'est pas disponible sur ce navigateur.', 'info', 4000);
+    return;
+  }
+  _pwaInstallPrompt.prompt();
+  const { outcome } = await _pwaInstallPrompt.userChoice;
+  if (outcome === 'accepted') {
+    _pwaInstallPrompt = null;
+  }
+}

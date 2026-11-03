@@ -4,6 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0D2E5B">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OUIDROP">
+  <meta name="application-name" content="OUIDROP">
   <title>OUIDROP — Tableau de bord</title>
   <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
@@ -24,6 +31,13 @@
       font-weight: 800;
       font-size: 18px;
       letter-spacing: -0.3px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
     }
 
     .header-right {
@@ -69,6 +83,7 @@
       border-radius: var(--radius);
       padding: 24px;
       position: relative;
+      overflow: hidden;
     }
 
     .search-hero::before {
@@ -380,6 +395,12 @@
         grid-template-columns: 1fr 1fr;
       }
     }
+
+    @media (min-width: 769px) {
+      .hamburger {
+        display: none;
+      }
+    }
   </style>
 </head>
 
@@ -396,6 +417,8 @@
         <span class="sync-info" id="syncInfo">Chargement…</span>
         <button class="btn btn-ghost btn-sm" onclick="refreshDB()" id="refreshBtn" title="Actualiser la BDD">⟳
           Actualiser</button>
+        <button class="btn btn-ghost btn-sm" id="pwaInstallBtn" onclick="promptPWAInstall()"
+          title="Installer l'application" style="display:none;">⬇ Installer</button>
         <button class="btn btn-ghost btn-sm" onclick="logout()" title="Déconnexion">⏻</button>
       </div>
     </header>
@@ -785,6 +808,29 @@
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('open');
       document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+  </script>
+
+  <script>
+    // ── PWA Service Worker ────────────────────────────
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => {
+            // Mise à jour silencieuse
+            reg.addEventListener('updatefound', () => {
+              const newWorker = reg.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    newWorker.postMessage({ type: 'SKIP_WAITING' });
+                  }
+                });
+              }
+            });
+          })
+          .catch(() => { }); // Silencieux si SW non supporté
+      });
     }
   </script>
 </body>
